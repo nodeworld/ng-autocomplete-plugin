@@ -1,0 +1,71 @@
+{
+  "name": "ng-autocomplete-plugin",
+  "description": "A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects!",
+  "version": "0.0.9",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": false,
+  "dependencies": {
+    "@angular/animations": "^14.0.0",
+    "@angular/common": "^14.0.0",
+    "@angular/compiler": "^14.0.0",
+    "@angular/core": "^14.0.0",
+    "@angular/forms": "^14.0.0",
+    "@angular/platform-browser": "^14.0.0",
+    "@angular/platform-browser-dynamic": "^14.0.0",
+    "@angular/router": "^14.0.0",
+    "rxjs": "~7.5.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^14.0.7",
+    "@angular/cli": "~14.0.0",
+    "@angular/compiler-cli": "^14.0.0",
+    "@types/jasmine": "~4.0.0",
+    "jasmine-core": "~4.1.0",
+    "karma": "~6.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.0.0",
+    "karma-jasmine-html-reporter": "~1.7.0",
+    "ng-packagr": "^14.0.0",
+    "typescript": "~4.7.2"
+  },
+  "keywords": [
+    "angular",
+    "autocomplete",
+    "angular autocomplete",
+    "auto suggest",
+    "ng autosuggest",
+    "ng autocomplete",
+    "angular autocomplete plugin",
+    "angular 10",
+    "angular 11",
+    "angular 12",
+    "angular 13",
+    "angular 14",
+    "angular 15",
+    "angular 16",
+    "angular 17",
+    "angular 18"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodeworld/ng-autocomplete-plugin.git"
+  },
+  "homepage": "https://github.com/nodeworld/ng-autocomplete-plugin#readme",
+  "author": "nodeworld",
+  "license": "MIT",
+  "sponsor": {
+    "url": "https://buymeacoffee.com/nodeworld"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
