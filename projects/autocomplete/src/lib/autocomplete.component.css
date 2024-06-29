@@ -1,0 +1,120 @@
+.auto-complete-form-container {
+    width: inherit;
+    height: inherit;
+}
+
+.auto-complete-textfield-container {
+    width: 100%;
+    height: inherit;
+}
+
+.auto-complete-remove-selection {
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: -25px;
+    cursor: pointer;
+}
+
+.auto-complete-textfield {
+    width: inherit;
+    height: 2rem;
+    outline: none;
+    border: 1px solid grey;
+    border-radius: 5px;
+    cursor: text;
+}
+
+.auto-complete-list {
+    width: inherit;
+    background-color: #FFFFFF;
+    display: none;
+}
+
+
+.unorder-list {
+    list-style: none;
+    max-height: 20rem;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    border: 1px solid #E8E8E8;
+    box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.1);
+    color: #000000;
+}
+
+.autocomplete-data-list {
+    padding: 1rem;
+}
+
+.autocomplete-data-list:hover {
+    background-color: #EEEDED;
+    cursor: pointer;
+}
+
+.showDropdown {
+    display: block;
+}
+
+.loader {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #D4D3D3;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.auto-complete-textfield:disabled {
+    background-color: #E7E7E7;
+    border: 1px solid #D5D5D5;
+    cursor: default;
+}
+
+.auto-complete-list-spinner {
+    padding: 1rem;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.arrow {
+    height: 0;
+    width: 0;
+    border: 4px solid transparent;
+    display: inline-block;
+    margin-top: 5px;
+    margin-left: -20px;
+    cursor: pointer;
+ }
+
+.arrow.down {
+    border-top-color: #000;
+ }
+
+.disable-list-element {
+    pointer-events:none;
+    opacity:0.5;
+    background-color: #E5E5E5;
+ }
+
+::-webkit-input-placeholder {
+    text-transform: capitalize;
+}
+
+::-moz-placeholder {
+    text-transform: capitalize;
+}
+
+::-ms-placeholder {
+    text-transform: capitalize;
+}
