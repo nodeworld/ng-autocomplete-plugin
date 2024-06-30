@@ -1,7 +1,7 @@
 {
   "name": "ng-autocomplete-plugin",
   "description": "A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects!",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

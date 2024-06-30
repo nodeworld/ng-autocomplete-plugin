@@ -49,6 +49,7 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
+| 1.0.2   | Recommended. Only Read me file updated. |
 | 1.0.1   | First major version |
 
 ## Demo & Examples
@@ -164,7 +165,7 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 
 #### This is for informational purpose only. Be cautious if you are overriding these CSS as it may affect dropdown style if updated incorrectly. Make sure you use ::ng-deep or host when updating the internal css or by turning off encapsulation.
 
-###### It is always recommended to add class through component through customClass or customStyle Input() properties.
+###### It is always recommended to add class through customClass or customStyle Input() properties.
 
 | Classes | Description | Comments |
 | :-------- | :-----------| :-----------| 
@@ -267,10 +268,10 @@ customClassType: CustomNgStyleType = {
 
 To add a custom spinner, do the following
 
-Mark the @Input() properties like below
+Mark @Input() properties like below
 
 ```ts
-showLoadingSpinner = false; // Turn this off for custom spinner.
+showLoadingSpinner = true; // Turn this ON so that module will show the spinner.
 ```
 
 ```ts
@@ -280,7 +281,7 @@ isCustomSpinner = true;
 <ng-autocomplete
     [dropdownData]="YOUR_DROPDOWN_DATA"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
-    [showLoadingSpinner]="false"
+    [showLoadingSpinner]="true"
     [isCustomSpinner]="true">
     <span customSpinner class="YOUR_CLASS"> </span>
 </ng-autocomplete>
