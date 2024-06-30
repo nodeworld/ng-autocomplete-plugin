@@ -1,7 +1,11 @@
 
 # Angular Autocomplete 
 
-A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects!
+A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects
+
+# Recommended Angular version 
+
+Angular 14+
     
 
 ## Whats better in this package?
@@ -15,17 +19,48 @@ A simple, powerful, lightweight and customizable autocomplete tool programmed fo
 - Easy virtual scrolling for large data set without 3rd party
 - Custom classes and ng-styles are allowed
 - Ability to use 3rd party style packages like bootstrap, tailwind. (You can update the classes from your component)
-- 20 solid test cases to validate the module.
+- 22+ solid test cases to validate the module
 
 
 ## Installation
 
-Install ng-autosuggest with npm
+Install ng-autocomplete-plugin with npm
 
 ```bash
-  npm install ng-autosuggest --save
+  npm install ng-autocomplete-plugin --save
+
+  or
+
+   npm i ng-autocomplete-plugin
 ```
 
+## Running Tests
+
+ng-autocomplete-plugin has 20+ solid test cases to make sure components executes without any issues.
+
+To run tests, run the following command
+
+```bash
+  npm run test
+  or
+  ng test
+```
+## Package version
+
+| ng-autocomplete-plugin version | Description | 
+| :-------- | :-----------|
+| 1.0.1   | First major version |
+
+## Demo & Examples
+
+| Demo Description | Stackblitz Example | 
+| :-------- | :-----------|
+| Autocomplete Example   | [Autocomplete - Stackblitz](https://stackblitz.com/edit/stackblitz-starters-fheu3d) |
+| API Call Event Example      | [Autocomplete with API call event -  Stackblitz](https://stackblitz.com/edit/angular-ivy-bee32e) |
+| Autocomplete With Bootstrap    | [Autocomplete with bootstrap](https://stackblitz.com/edit/angular-ivy-44evld)|
+| Autocomplete With Tailwind    | [Autocomplete with tailwind](https://stackblitz.com/edit/starters-tailwind-by-ven-vcksuf)|
+| Turn off performance calculation during scroll  | [Turn off performance calculation during scroll](https://stackblitz.com/edit/angular-ivy-mqghge)|
+| Disabling a list in dropdown| [Disabling a list in dropdown](https://stackblitz.com/edit/angular-ivy-cnzhan)|
 
 
 
@@ -38,6 +73,7 @@ Install ng-autosuggest with npm
 | `dropdownData` | `string[] or object[]`  | **Yes**. | Accepts array of strings or numbers or array of objects |  |
 | `objectProperty` | `string` |**_Yes_** | Required only if `dropdownData` is object[]. Helps to display dropdown value in dropdown list. |
 | `placeholder` | `string` | `No` | Custom placeholder for auto-complete |
+| `defaultValue` | `string` or `object` | `No` | To pre-select a value from dropdown. |
 | `scrollData` | `number`| `No` | 1000 by default. Displays 1000 records by default. Can be changed as per project convenience. |
 | `scrollThreshold` | `number` | `No` | 3 by default. Helps to boost performance. It controls the scroll data and removes top or botton records during user scroll based on the scrollThreshold & scrollData configured. Check below for more details. |
 |`totalRecords` | `number` | `No` | If total number of records is known, totalRecords can be provided which will avoid extra condtions that will be executed in the package.
@@ -51,7 +87,7 @@ Install ng-autosuggest with npm
 |`customClass` | `object` |`No` | Allows custom styling at various levels. Check below for more information |
 |`showdropDownArrow` | `boolean` |`No` | Show or hide dropdown icon in autocomplete field. Default is `true`.  |
 |`showClearOption` |`boolean` |`No` | Shows clear option to allow user to clear the selected value. Default is `true`. |
-|`showLoadingSpinner` | `boolean`|`No` | Shows the spinner at the botton of the list if lazy loaded. Default is `false` |
+|`showLoadingSpinner` | `boolean`|`No` | Shows the spinner at the botton of the list if lazy loaded. Default is `false`. Use custom spinner for better flexibility and make sure `showLoadingSpinner` is set to true for custom spinner. |
 | `triggerBlurEvent`|`boolean` |`No` | Default is false. When set to true, it emits an output event `emitBlurEvent`  |
 |`triggerApiLoadEvent` |`boolean` |`No` | Default is `false`. If dropdown list is loaded through API via lazy loading, this can be set as true. Default is false. When set to true, it emits an output event `emitApiLoadEvent`. When the output event is emitted, user can take care of loading the dropdown data further.|
 |`triggerAutoCompleteOpenEvent` |`boolean` |`No` | Default is false. When set to true, it emits an output event `emitAutoCompleteOpenEvent` when auto-complete dropdown list opens. |
@@ -69,27 +105,31 @@ Install ng-autosuggest with npm
 
 # Using the module
 
-import AngularAutocomplete Module into your app.
+import `NgAutocompletePluginModule` into your app module.
+
+```ts
+import { NgAutocompletePluginModule } from 'ng-autocomplete-plugin';
+```
 
 In your HTML template
 
 For dropdown string array,Eg: ["Apple", "Banana", "Kiwi"], do as below.
 
 ```html
-<angular-autocomplete
+<ng-autocomplete
     [dropdownData]="YOUR_DROPDOWN_DATA"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)">
-</angular-autocomplete>
+</ng-autocomplete>
 ```
 
 For dropdown object array, Eg: [{"name": "Alex"}, {"name": "John"}], do as below.
 
 ```html
-<angular-autocomplete
+<ng-autocomplete
     [dropdownData]="YOUR_DROPDOWN_DATA"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
     [objectProperty]="'name'">
-</angular-autocomplete>
+</ng-autocomplete>
 ```
 ## Setting `scrollThreshold` & `initialVisibleData` for maximizng performance
 
@@ -120,6 +160,23 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 
 `initialVisibleData` & `scrollThreshold` is customizable based on project needs. If this performance calculation is not required, set `isScrollThresholdRequired` to `false`.
 
+## CSS Classes used in npm-autocomplete-plugin html template
+
+#### This is for informational purpose only. Be cautious if you are overriding these CSS as it may affect dropdown style if updated incorrectly. Make sure you use ::ng-deep or host when updating the internal css or by turning off encapsulation.
+
+###### It is always recommended to add class through component through customClass or customStyle Input() properties.
+
+| Classes | Description | Comments |
+| :-------- | :-----------| :-----------| 
+| `auto-complete-textfield-container`    | class of parent html div template | Able to override through `parentContainerClass` or `parentContainerStyle`  |
+| `label-container`      |  class of label tag |Able to override through `inputLabelContainerClass` or `inputLabelContainerStyle` |
+| `label-value`      |  Class of `<label>` tag |Able to override through `inputLabelClass` or `inputLabelStyle` |
+| `field-container`      |  Class of `div` that surrounds `input` field and autocomplete `li` | Able to override through `inputFieldContainerClass` or `inputFieldContainerStyle` |
+| `auto-complete-textfield`      | Class of `input` text field| Able to override through `inputFieldClass` or `inputFieldStyle`
+| `auto-complete-list`      |  Class of `div` that surrounds `li`|Able to override through `listContainerClass` or `listContainerStyle` |
+| `unorder-list`      |  Class of `ul`  |Able to override through `dropdownUnorderedListClass` or `dropdownUnorderedListStyle` |
+| `autocomplete-data-list`      |  Class of `li`  |Able to override through `disableListClass` or `dropdownListStyle` |
+| `autocomplete-data-list noSearchResult`      |  Class of `li` if search result not found.  |Able to override through `noResultClass` or `noResultStyle` |
 
 ## Adding Custom CSS Class to autocomplete
 
@@ -129,6 +186,7 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | CustomClassTypes              | Required    | Description |
 | :--------                     | :-----------| :-----------|
 | `parentContainerClass`        | `No` | Adds class to `div` surrounding the input field and dropdown list. |
+| `inputFieldContainerClass`    | `No` | Adds class to the parent div of `input` field |
 | `inputFieldClass`             | `No` | Adds class to `input textfield`|
 | `listContainerClass`          | `No` | Adds class to `div` that surrounds `ul` of dropdown list. |
 | `dropdownUnorderedListClass`  | `No` | Adds class to `ul` of dropdown list. |
@@ -136,6 +194,15 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | `noResultClass`               | `No` | Adds class to separate `li` item to show no result message. |
 | `disableListClass`            | `No` | Adds class to each `li` items. Depends on `disableListFn` function or `disableProperty`  |
 | `inputLabelClass`             | `No` | Adds class to `<label>` field |
+| `inputLabelContainerClass`    | `No` | Adds class to parent div of `<label>` field |
+
+import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
+
+```ts
+import { CustomClassType } from 'ng-autocomplete-plugin';
+```
+
+In your template, do the following:
 
 ```ts
 customClassType: CustomClassType = {
@@ -145,12 +212,12 @@ customClassType: CustomClassType = {
 ```
 
 ```html
-<angular-autocomplete
+<ng-autocomplete
     [dropdownData]="YOUR_DROPDOWN_DATA"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
     [objectProperty]="'name'"
     [customClassType]="customClassType">
-</angular-autocomplete>
+</ng-autocomplete>
 ```
 
 ## Adding Custom NgStyle to autocomplete
@@ -161,12 +228,23 @@ customClassType: CustomClassType = {
 | CustomNgStyleTypes | Required | Description |
 | :-------- | :-----------| :-----------|
 | `parentContainerStyle`      | `No` | Adds style to `div` surrounding the input field and dropdown list. |
+| `inputFieldContainerStyle`  | `No` | Adds style to the parent div of `input` field |
 | `inputFieldStyle`      | `No` | Adds style to `input textfield`|
 | `listContainerStyle`      | `No` | Adds style to `div` that surrounds `ul` of dropdown list. |
 | `dropdownUnorderedListStyle`      | `No` | Adds style to `ul` of dropdown list. |
 | `dropdownListStyle`      | `No` | Adds style to each `li` items|
 | `noResultStyle`      | `No` | Adds style to separate `li` item to show no result message. |
 | `inputLabelStyle`      | `No` | Adds style to `<label>` field |
+| `inputLabelContainerStyle`    | `No` | Adds style to parent div of `<label>` field |
+
+
+import `CustomNgStyleType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
+
+```ts
+import { CustomNgStyleType } from 'ng-autocomplete-plugin';
+```
+
+In your template, do the following:
 
 ```ts
 customClassType: CustomNgStyleType = {
@@ -176,23 +254,78 @@ customClassType: CustomNgStyleType = {
 ```
 
 ```html
-<angular-autocomplete
+<ng-autocomplete
     [dropdownData]="YOUR_DROPDOWN_DATA"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
     [objectProperty]="'name'"
     [customClassType]="customClassType">
-</angular-autocomplete>
+</ng-autocomplete>
 
 ```
+
+## Adding custom Spinner
+
+To add a custom spinner, do the following
+
+Mark the @Input() properties like below
+
+```ts
+showLoadingSpinner = false; // Turn this off for custom spinner.
+```
+
+```ts
+isCustomSpinner = true;
+```
+```html
+<ng-autocomplete
+    [dropdownData]="YOUR_DROPDOWN_DATA"
+    (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
+    [showLoadingSpinner]="false"
+    [isCustomSpinner]="true">
+    <span customSpinner class="YOUR_CLASS"> </span>
+</ng-autocomplete>
+```
+
+##### customSpinner in the span represents ng-content select attribute
+
+## Using custom content in the input textfield
+
+A flexible option is provided to add custom functionality in the input text field.
+
+```html
+<ng-autocomplete
+    [dropdownData]="YOUR_DROPDOWN_DATA"
+    (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
+    [showdropDownArrow]="false"
+    [showClearOption]="false">
+    <span textField class="YOUR_CLASS">YOUR_CONTENT</span>
+</ng-autocomplete>
+```
+`showdropDownArrow` and `showClearOption` can be passed as false for better placement of the customized ng-content.
+
+##### textField in the span represents ng-content select attribute
+
+
+
 ## Adding Accessible Rich Internet Applications (ARIA)
 
 #### ARIA provides easy access to the content for people with disabilities with help of screen reader.
 
-| Attributes | Required | Description |
-| :-------- | :-----------| :-----------|
-| `ariaRole`            | `No` | Adds ARIA role  to `input textfield` |
-| `ariaInputField`      | `No` | Adds ARIA label  to `input textfield`|
-| `ariaNoSearchResult`  | `No` | Adds ARIA label to no result found `li` item|
-| `ariaULList`          | `No` | Adds ARIA label to `ul` list item |
-| `ariaListContainer`   | `No` | Adds ARIA label to list container `div`. |
-| `ariaInputLabel`   | `No` | Adds ARIA label to `label field`. |
+| Attributes | Decorator | Required | Description |
+| :-------- | :-----------| :-----------|:-----------|
+| `ariaRole`            | @Input    | `No` | Adds ARIA role  to `input textfield` |
+| `ariaInputField`      | @Input    | `No` | Adds ARIA label  to `input textfield`|
+| `ariaNoSearchResult`  | @Input    | `No` | Adds ARIA label to no result found `li` item|
+| `ariaULList`          | @Input    | `No` | Adds ARIA label to `ul` list item |
+| `ariaListContainer`   | @Input    | `No` | Adds ARIA label to list container `div`. |
+| `ariaInputLabel`      | @Input    | `No` | Adds ARIA label to `label field`. |
+
+## Support
+
+Don't hesitate to raise an issue if you find any.
+
+
+## Roadmap
+
+Adding similar autocomplete feature in VUE and React during upcoming months.
+

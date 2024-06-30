@@ -26,7 +26,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() noSearchResultMessage = 'No results found.';
 
-  @Input() placeholder = 'Select a value.';
+  @Input() placeholder = 'Select Value.';
 
   @Input() isNumber = false;
 
@@ -66,6 +66,10 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @ViewChild('autoCompleteContainer') autoCompleteContainer!: ElementRef<HTMLElement>;
 
+  @ViewChild('listContainer') listContainer!: ElementRef<HTMLElement>;
+  
+  @ViewChild('fieldContainer') fieldContainer!: ElementRef<HTMLElement>;
+
   @Input() searchFn: any;
 
   @Input() disableListFn: Function | undefined;
@@ -87,6 +91,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   @Input() showInputlabel = false;
 
   @Input() inputLabel = "Enter or Search value";
+
+  @Input() defaultValue: any | undefined;
 
   scrollEventListener: any;
   clickEventListener: any;
@@ -218,9 +224,35 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.scrollThreshold = 1;
       }
       this.setData();
+      this.setDefaultValueIfPresent();
     } catch (err) {
       console.log(err);
     }
+  }
+
+  setDefaultValueIfPresent() {
+    if (this.defaultValue === undefined || this.defaultValue === null || this.defaultValue === '') { return; }
+    if (this.defaultValue.constructor.name === 'Array') { return; }
+    if (typeof this.defaultValue === 'object') {
+      if (!this.objectProperty) { return; }
+      const findDefaultValue = this.dropdownData.find(data => data[this.objectProperty!] === this.defaultValue[this.objectProperty!])
+      if (findDefaultValue) {
+        this.searchValue = findDefaultValue[this.objectProperty!];
+      }
+      return;
+    }
+    if (this.objectProperty) {
+      const findDefaultValue = this.dropdownData.find(data => (data[this.objectProperty!] + '').toLowerCase() === this.defaultValue.toLowerCase());
+      if (findDefaultValue) {
+        this.searchValue = findDefaultValue[this.objectProperty!];
+      }
+      return;
+    }
+    const findDefaultValue = this.dropdownData.find(data => (data + '').toLowerCase() === (this.defaultValue + '').toLowerCase())
+    if (findDefaultValue) {
+      this.searchValue = findDefaultValue;
+    }
+    return;
   }
 
   closeAutoComplete() {
@@ -249,6 +281,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       if(this.isAutoCompleteDivClicked) { return; }
       this.isAutoCompleteDivClicked = true;
       if (this.filteredData.length <= 0) { this.setData(); }
+      /* Set width of autocomplete div based on inherited width from parent */
+      this.listContainer.nativeElement.style.width = (this.fieldContainer.nativeElement.offsetWidth + 5) + 'px';
       if (this.triggerAutoCompleteOpenEvent) {
         this.emitAutoCompleteOpenEvent.emit({open: true});
       }

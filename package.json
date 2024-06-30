@@ -1,7 +1,7 @@
 {
   "name": "ng-autocomplete-plugin",
   "description": "A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects!",
-  "version": "0.0.9",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -44,16 +44,9 @@
     "auto suggest",
     "ng autosuggest",
     "ng autocomplete",
+    "ng autocomplete plugin",
     "angular autocomplete plugin",
-    "angular 10",
-    "angular 11",
-    "angular 12",
-    "angular 13",
-    "angular 14",
-    "angular 15",
-    "angular 16",
-    "angular 17",
-    "angular 18"
+    "typeahead"
   ],
   "repository": {
     "type": "git",

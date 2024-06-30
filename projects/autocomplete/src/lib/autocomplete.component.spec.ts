@@ -223,4 +223,21 @@ describe('AutocompleteComponent', () => {
     expect(component.filteredData.length).toBe(1000);
   });
 
+    /* Test case to check if default value is set */
+    it("Expect search value to be preselected in dropdown if default value is provided.", () => {
+      component.dropdownData = simpleArrayData;
+      component.defaultValue = 'kiwi';
+      component.ngOnInit();
+      component.setDefaultValueIfPresent();
+      expect((component.defaultValue + '').toLowerCase()).toEqual((component.searchValue + '').toLowerCase());
+    });
+
+  /* Test case to check if default value does not throw error when invalid default value is provided. */
+  it("Expect search value not to be selected in dropdown if default value does not match.", () => {
+    component.dropdownData = simpleArrayData;
+    component.defaultValue = 'mango';
+    component.ngOnInit();
+    expect(component.searchValue).toBeUndefined();
+  });
+
 });
