@@ -2,69 +2,85 @@
 [ngClass]="customClass && customClass.parentContainerClass ? customClass.parentContainerClass : ''"
 [ngStyle]="customStyle && customStyle.parentContainerStyle ? customStyle.parentContainerStyle : null"
 class="auto-complete-textfield-container">
-<label
-  [ngClass]="customClass && customClass.inputLabelClass ? customClass.inputLabelClass : ''"
-  [ngStyle]="customStyle && customStyle.inputLabelStyle ? customStyle.inputLabelStyle : null"
-  [attr.aria-label]="ariaInputLabel"
-  *ngIf="showInputlabel"
-  for="searchInput">{{inputLabel}}</label>
-<input
-  id="searchInput"
-  [attr.role]="ariaRole"
-  [(ngModel)]="searchValue"
-  [attr.aria-label]="ariaInputField"
-  name="searchValue"
-  (input)="!searchFn ? onSearch($event) : customSearch($event)"
-  (focus)="onFocus()"
-  [disabled]="isAutoCompleteDisabled"
-  class="auto-complete-textfield"
-  [ngClass]="customClass && customClass.inputFieldClass ? customClass.inputFieldClass : ''"
-  [ngStyle]="customStyle && customStyle.inputFieldStyle ? customStyle.inputFieldStyle : null"
-  type="text"
-  autocomplete="off"
-  [placeholder]="placeholder" />
+<div
+  class="label-container"
+  [ngClass]="customClass && customClass.inputLabelContainerClass ? customClass.inputLabelContainerClass : ''"
+  [ngStyle]="customStyle && customStyle.inputLabelContainerStyle ? customStyle.inputLabelContainerStyle : null"
+  >
+  <label
+    class="label-value"
+    [ngClass]="customClass && customClass.inputLabelClass ? customClass.inputLabelClass : ''"
+    [ngStyle]="customStyle && customStyle.inputLabelStyle ? customStyle.inputLabelStyle : null"
+    [attr.aria-label]="ariaInputLabel"
+    *ngIf="showInputlabel"
+    for="searchInput">{{inputLabel}}
+  </label>
+</div>
+<div class="field-container"
+  [ngClass]="customClass && customClass.inputFieldContainerClass ? customClass.inputFieldContainerClass : ''"
+  [ngStyle]="customStyle && customStyle.inputFieldContainerStyle ? customStyle.inputFieldContainerStyle : null"
+  #fieldContainer>
+  <input
+    id="searchInput"
+    [attr.role]="ariaRole"
+    [(ngModel)]="searchValue"
+    [attr.aria-label]="ariaInputField"
+    name="searchValue"
+    (input)="!searchFn ? onSearch($event) : customSearch($event)"
+    (focus)="onFocus()"
+    [disabled]="isAutoCompleteDisabled"
+    class="auto-complete-textfield"
+    [ngClass]="customClass && customClass.inputFieldClass ? customClass.inputFieldClass : ''"
+    [ngStyle]="customStyle && customStyle.inputFieldStyle ? customStyle.inputFieldStyle : null"
+    type="text"
+    autocomplete="off"
+    [placeholder]="placeholder"/>
         <span *ngIf="showdropDownArrow" class="arrow down" (click)="onFocus()"></span>
         <span (click)="clearSearch()" *ngIf="searchValue && showClearOption"
         class="auto-complete-remove-selection">&times;</span>
         <ng-content select="[textField]"></ng-content>
-<div
-  [ngClass]="[customClass && customClass.listContainerClass ? customClass.listContainerClass : '', isAutoCompleteDivClicked ? 'showDropdown' : '']"
-  [ngStyle]="customStyle && customStyle.listContainerStyle ? customStyle.listContainerStyle : null"
-  class="auto-complete-list" [attr.aria-label]="ariaListContainer">
-  <div id="list-container">
-    <ul #unOrderedList
-      [attr.aria-label]="ariaULList"
-      id="list-id"
-      class="unorder-list"
-      [ngClass]="customClass && customClass.dropdownUnorderedListClass ? customClass.dropdownUnorderedListClass : ''"
-      [ngStyle]="customStyle && customStyle.dropdownUnorderedListStyle ? customStyle.dropdownUnorderedListStyle : null">
-      <ng-container
-        *ngFor="let data of filteredData; let i = index; trackBy: customTrackBy ? customTrackBy: identify">
-          <li
-            [attr.aria-disabled]="disableListFn ? disableListFn(i, data) : (disableProperty) ? data[disableProperty] : false"
-            [ngClass]="[customClass && customClass.dropdownListClass ? customClass.dropdownListClass : '',
-              ((!customClass || !customClass.disableListClass) && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]))) ? 'disable-list-element' : '',
-              (customClass && customClass.disableListClass && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]) )) ? customClass.disableListClass : '']"
-            [ngStyle]="customStyle && customStyle.dropdownListStyle ? customStyle.dropdownListStyle : null"
-            class="autocomplete-data-list"
-            (click)="selectedItem(data)">
-            {{!objectProperty ? data : data[objectProperty]}}
-          </li>
-      </ng-container>
-      <li *ngIf="showLoadingSpinner && showDataLoader && !isCustomSpinner" class="auto-complete-list-spinner"><span class="loader"></span></li>
-      <li *ngIf="showLoadingSpinner && showDataLoader && isCustomSpinner" class="auto-complete-list-spinner">
-        <ng-content select="[customSpinner]"></ng-content>
-      </li>
-      <ng-container *ngIf="filteredData.length <= 0">
-        <li
-          [attr.aria-label]="ariaNoSearchResult"
-          [ngClass]="customClass && customClass.noResultClass ? customClass.noResultClass : ''"
-          class="autocomplete-data-list noSearchResult"
-          [ngStyle]="customStyle && customStyle.noResultStyle ? customStyle.noResultStyle : null">
-          {{noSearchResultMessage}}
+  <div
+    #listContainer
+    [ngClass]="[customClass && customClass.listContainerClass ? customClass.listContainerClass : '', isAutoCompleteDivClicked ? 'showDropdown' : '']"
+    [ngStyle]="customStyle && customStyle.listContainerStyle ? customStyle.listContainerStyle : null"
+    class="auto-complete-list" [attr.aria-label]="ariaListContainer">
+    <div id="list-container">
+      <ul #unOrderedList
+        [attr.aria-label]="ariaULList"
+        id="list-id"
+        class="unorder-list"
+        [ngClass]="customClass && customClass.dropdownUnorderedListClass ? customClass.dropdownUnorderedListClass : ''"
+        [ngStyle]="customStyle && customStyle.dropdownUnorderedListStyle ? customStyle.dropdownUnorderedListStyle : null">
+        <ng-container *ngIf="isAutoCompleteDivClicked">
+          <ng-container
+          *ngFor="let data of filteredData; let i = index; trackBy: customTrackBy ? customTrackBy: identify">
+            <li
+              [attr.aria-disabled]="disableListFn ? disableListFn(i, data) : (disableProperty) ? data[disableProperty] : false"
+              [ngClass]="[customClass && customClass.dropdownListClass ? customClass.dropdownListClass : '',
+                ((!customClass || !customClass.disableListClass) && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]))) ? 'disable-list-element' : '',
+                (customClass && customClass.disableListClass && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]) )) ? customClass.disableListClass : '']"
+              [ngStyle]="customStyle && customStyle.dropdownListStyle ? customStyle.dropdownListStyle : null"
+              class="autocomplete-data-list"
+              (click)="selectedItem(data)">
+              {{!objectProperty ? data : data[objectProperty]}}
+            </li>
+        </ng-container>
+        </ng-container>
+        <li *ngIf="showLoadingSpinner && showDataLoader && !isCustomSpinner" class="auto-complete-list-spinner"><span class="loader"></span></li>
+        <li *ngIf="showLoadingSpinner && showDataLoader && isCustomSpinner" class="auto-complete-list-spinner">
+          <ng-content select="[customSpinner]"></ng-content>
         </li>
-      </ng-container>
-    </ul>
+        <ng-container *ngIf="filteredData.length <= 0">
+          <li
+            [attr.aria-label]="ariaNoSearchResult"
+            [ngClass]="customClass && customClass.noResultClass ? customClass.noResultClass : ''"
+            class="autocomplete-data-list noSearchResult"
+            [ngStyle]="customStyle && customStyle.noResultStyle ? customStyle.noResultStyle : null">
+            {{noSearchResultMessage}}
+          </li>
+        </ng-container>
+      </ul>
+    </div>
   </div>
 </div>
 </div>

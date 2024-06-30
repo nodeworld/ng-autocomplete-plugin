@@ -1,11 +1,26 @@
 {
   "name": "ng-autocomplete-plugin",
-  "version": "0.0.9",
+  "version": "1.0.1",
   "peerDependencies": {
-    "@angular/common": "^14.0.0",
-    "@angular/core": "^14.0.0"
+    "@angular/common": "*",
+    "@angular/core": "*"
   },
   "dependencies": {
     "tslib": "^2.3.0"
-  }
+  },
+  "license": "MIT",
+  "sponsor": {
+    "url": "https://buymeacoffee.com/nodeworld"
+  },
+  "keywords": [
+    "angular",
+    "autocomplete",
+    "angular autocomplete",
+    "auto suggest",
+    "ng autosuggest",
+    "ng autocomplete",
+    "ng autocomplete plugin",
+    "angular autocomplete plugin",
+    "typeahead"
+  ]
 }
