@@ -1,9 +1,9 @@
 
 # Angular Autocomplete 
 
-A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects
+A simple, powerful, lightweight and customizable autocomplete tool programmed for Angular projects.
 
-# Recommended Angular version 
+## Recommended Angular version 
 
 Angular 14+
     
@@ -18,9 +18,9 @@ Angular 14+
 - Supports custom events
 - Easy virtual scrolling for large data set without 3rd party
 - Custom classes and ng-styles are allowed
-- Ability to use 3rd party style packages like bootstrap, tailwind. (You can update the classes from your component)
+- Ability to use 3rd party style packages like bootstrap, tailwind or any css libraries. (You can update the classes from your component)
 - 22+ solid test cases to validate the module
-
+- Eventful module.
 
 ## Installation
 
@@ -49,6 +49,7 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
+| `1.0.3`  | Recommended. Updated readme file with few changes. |
 | 1.0.2   | Recommended. Only Read me file updated. |
 | 1.0.1   | First major version |
 
@@ -73,28 +74,29 @@ To run tests, run the following command
 | -------- | ------- | ------- | ------- |
 | `dropdownData` | `string[] or object[]`  | **Yes**. | Accepts array of strings or numbers or array of objects |  |
 | `objectProperty` | `string` |**_Yes_** | Required only if `dropdownData` is object[]. Helps to display dropdown value in dropdown list. |
-| `placeholder` | `string` | `No` | Custom placeholder for auto-complete |
+| `placeholder` | `string` | `No` | Custom placeholder for auto-complete. |
 | `defaultValue` | `string` or `object` | `No` | To pre-select a value from dropdown. |
-| `scrollData` | `number`| `No` | 1000 by default. Displays 1000 records by default. Can be changed as per project convenience. |
-| `scrollThreshold` | `number` | `No` | 3 by default. Helps to boost performance. It controls the scroll data and removes top or botton records during user scroll based on the scrollThreshold & scrollData configured. Check below for more details. |
-|`totalRecords` | `number` | `No` | If total number of records is known, totalRecords can be provided which will avoid extra condtions that will be executed in the package.
-|`disableProperty` | `string` | `No` | To disable specific dropdown list in dropdown. User cannot select the dropdown if disabled. This property can be used for object[] dropdown and `disableProperty` should be one of the boolean property in object|
-|`disableListFn` |`Function` |`No` | If disable should be calculated dynamically using a function and custom code, assign customized function to `disableListFn`. disableListFn accepts two parameters (index, data)|
+| `initialVisibleData` | `number`| `No` | Displays 1000 records in dropdown by default. Can be changed as per project convenience. |
+| `scrollThreshold` | `number` | `No` | 3 by default. Helps to boost performance. It controls the scroll data and removes top or botton records during user scroll based on the scrollThreshold & initialVisibleData configured. Check below for more details. |
+|`totalRecords` | `number` | `No` | If total number of records is known, totalRecords can be provided which will avoid extra events getting executed.
+|`disableProperty` | `string` | `No` | To disable specific dropdown list item in dropdown. User cannot select the dropdown if disabled. This property can be used for object[] dropdown and `disableProperty` should be one of the boolean property in object|
+|`disableListFn` |`Function` |`No` | If disable a list item should be calculated dynamically using a function and custom code, assign customized function to `disableListFn`. disableListFn accepts two parameters (index, data)|
 |`searchFn` |`Function` |`No` | Customized search function. Customized search function accepts one parameter, `event`. On keyUp, the customized search function will be called to perform custom execution.|
 |`isNumber` |`boolean` |`No` | If the displayed list is number, then sending `isNumber` as true will help to search the list efficiently |
-|`noSearchResultMessage` |`string` |`No` | By default **No results found** message will be displayed when search result is 0  |
-|`customTrackBy` | `Function` |`No` | Customize ngFor trackBy Function|
-|`isAutoCompleteDisabled` |`boolean` |`No` | By default value is false. If updated as true, the input fields gets disabled. |
-|`customClass` | `object` |`No` | Allows custom styling at various levels. Check below for more information |
-|`showdropDownArrow` | `boolean` |`No` | Show or hide dropdown icon in autocomplete field. Default is `true`.  |
-|`showClearOption` |`boolean` |`No` | Shows clear option to allow user to clear the selected value. Default is `true`. |
-|`showLoadingSpinner` | `boolean`|`No` | Shows the spinner at the botton of the list if lazy loaded. Default is `false`. Use custom spinner for better flexibility and make sure `showLoadingSpinner` is set to true for custom spinner. |
-| `triggerBlurEvent`|`boolean` |`No` | Default is false. When set to true, it emits an output event `emitBlurEvent`  |
-|`triggerApiLoadEvent` |`boolean` |`No` | Default is `false`. If dropdown list is loaded through API via lazy loading, this can be set as true. Default is false. When set to true, it emits an output event `emitApiLoadEvent`. When the output event is emitted, user can take care of loading the dropdown data further.|
+|`noSearchResultMessage` |`string` |`No` | By default **No results found** message will be displayed when search result is 0. It can be changed with this input property.  |
+|`customTrackBy` | `Function` |`No` | Custom ngFor trackBy Function|
+|`isAutoCompleteDisabled` |`boolean` |`No` | Default value is false. If updated as true, the input field gets disabled. |
+|`customClass` | `object` |`No` | Allows custom class styling at various dom levels. Check below for more information |
+|`customStyle` | `object` |`No` | Allows custom ng-style. Check below for more information |
+|`showdropDownArrow` | `boolean` |`No` | Default is `true`. Show or hide dropdown icon in autocomplete field.  |
+|`showClearOption` |`boolean` |`No` | Default is `true`. Shows clear option to allow the user to reset or clear the selected value. |
+|`showLoadingSpinner` | `boolean`|`No` | Default is `false`. Shows the spinner at the botton of the list if lazy loaded. Use custom spinner for better flexibility and make sure `showLoadingSpinner` is set to true for custom spinner. |
+| `triggerBlurEvent`|`boolean` |`No` | Default is false. When set to true, it emits an output event `emitBlurEvent` during focusOut  |
+|`triggerApiLoadEvent` |`boolean` |`No` | Default is `false`. If dropdown list is loaded through API via lazy loading, this can be set as true, it emits an event `emitApiLoadEvent`. When the output event is emitted, user can take care of loading the dropdown data further.|
 |`triggerAutoCompleteOpenEvent` |`boolean` |`No` | Default is false. When set to true, it emits an output event `emitAutoCompleteOpenEvent` when auto-complete dropdown list opens. |
 |`triggerSearchEvent` |`boolean` |`No` | Default is false. When set to true, emits an output event `emitSearchEvent` whenever user types and search. |
 |`triggerClearSelectionEvent` |`boolean` |`No` | Default is false. When set to true, emits an output event `emitClearSelectedEvent` whenever selected field is cleared.  |
-|`isScrollThresholdRequired`|`boolean`|`No` | Default is true. If scrollData and scrollThreshold is performance calculation is not required, set it to false. See below for more information.|
+|`isScrollThresholdRequired`|`boolean`|`No` | Default is true. If initialVisibleData and scrollThreshold is performance calculation is not required, set it to false. See below for more information.|
 
 #### Output decorators
 | Output    | Required  | Description |
@@ -103,6 +105,7 @@ To run tests, run the following command
 |`emitApiLoadEvent` |`No` | To load next set of dropdownData using API or any other external means. Emits event when end of scroll is reached.`triggerApiLoadEvent` needs to be set to true to emit this event. |
 |`emitAutoCompleteOpenEvent` |`No` | Emits event when dropdown is opened or displayed. `triggerAutoCompleteOpenEvent` needs to be set to true to emit this event.|
 |`emitClearSelectedEvent` |`No` | Emits event when selected value is cleared. `triggerClearSelectionEvent` needs to be set to true to emit this event.|
+|`emitBlurEvent` |`No` | Emits event during focus out. `triggerBlurEvent` needs to be set to true to emit this event.|
 
 # Using the module
 
@@ -132,6 +135,18 @@ For dropdown object array, Eg: [{"name": "Alex"}, {"name": "John"}], do as below
     [objectProperty]="'name'">
 </ng-autocomplete>
 ```
+
+To control the width of autocomplete, wrap a div and specify the width. Custom CSS classes can also be used(Scroll below).
+```html
+<div style="width: 200px">
+    <ng-autocomplete
+        [dropdownData]="YOUR_DROPDOWN_DATA"
+        (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
+        [objectProperty]="'name'">
+    </ng-autocomplete>
+</div>
+``` 
+
 ## Setting `scrollThreshold` & `initialVisibleData` for maximizng performance
 
 By default, `initialVisibleData` is set to 1000 and `scrollThreshold` is set to 3. It can be customized as per requirement.
@@ -169,8 +184,8 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 
 | Classes | Description | Comments |
 | :-------- | :-----------| :-----------| 
-| `auto-complete-textfield-container`    | class of parent html div template | Able to override through `parentContainerClass` or `parentContainerStyle`  |
-| `label-container`      |  class of label tag |Able to override through `inputLabelContainerClass` or `inputLabelContainerStyle` |
+| `auto-complete-textfield-container`    | Class of parent html div template | Able to override through `parentContainerClass` or `parentContainerStyle`  |
+| `label-container`      |  Class of label tag |Able to override through `inputLabelContainerClass` or `inputLabelContainerStyle` |
 | `label-value`      |  Class of `<label>` tag |Able to override through `inputLabelClass` or `inputLabelStyle` |
 | `field-container`      |  Class of `div` that surrounds `input` field and autocomplete `li` | Able to override through `inputFieldContainerClass` or `inputFieldContainerStyle` |
 | `auto-complete-textfield`      | Class of `input` text field| Able to override through `inputFieldClass` or `inputFieldStyle`
@@ -266,9 +281,9 @@ customClassType: CustomNgStyleType = {
 
 ## Adding custom Spinner
 
-To add a custom spinner, do the following
+To add a custom spinner, do the following. Recommended to use custom spinner to have better control of project requirement.
 
-Mark @Input() properties like below
+Update @Input() properties like below
 
 ```ts
 showLoadingSpinner = true; // Turn this ON so that module will show the spinner.
@@ -323,10 +338,15 @@ A flexible option is provided to add custom functionality in the input text fiel
 
 ## Support
 
-Don't hesitate to raise an issue if you find any.
+Please raise an issue in github, if you find any.
 
 
 ## Roadmap
 
-Adding similar autocomplete feature in VUE and React during upcoming months.
+Will deploy more features in future.
 
+Will be working on adding similar autocomplete feature in VUE and React.
+
+## Github link
+
+Github Link - [ng-autocomplete-plugin](https://github.com/nodeworld/ng-autocomplete-plugin)

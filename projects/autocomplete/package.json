@@ -1,6 +1,6 @@
 {
   "name": "ng-autocomplete-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "peerDependencies": {
     "@angular/common": "*",
     "@angular/core": "*"
@@ -12,6 +12,12 @@
   "sponsor": {
     "url": "https://buymeacoffee.com/nodeworld"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodeworld/ng-autocomplete-plugin.git"
+  },
+  "homepage": "https://github.com/nodeworld/ng-autocomplete-plugin#readme",
+  "author": "nodeworld",
   "keywords": [
     "angular",
     "autocomplete",
