@@ -119,3 +119,9 @@
 ::-ms-placeholder {
     text-transform: capitalize;
 }
+
+.view-more {
+    cursor: pointer;
+    background-color: #f6f5f5;
+    letter-spacing: 0.5px;
+}

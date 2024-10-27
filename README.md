@@ -6,7 +6,7 @@ A simple, powerful, lightweight and customizable autocomplete tool programmed fo
 ## Recommended Angular version 
 
 Angular 14+
-    
+
 
 ## Whats better in this package?
 
@@ -31,7 +31,7 @@ Install ng-autocomplete-plugin with npm
 
   or
 
-   npm i ng-autocomplete-plugin
+  npm i ng-autocomplete-plugin
 ```
 
 ## Running Tests
@@ -49,8 +49,9 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `1.0.3`  | Recommended. Updated readme file with few changes. |
-| 1.0.2   | Recommended. Only Read me file updated. |
+| `2.0.0`  | Recommended. Major Upgrade in search algorithm with bugs fixed. Added View More Button as a new feature |
+| `1.0.3`  | Updated readme file with few changes. |
+| 1.0.2   | Only Read me file updated. |
 | 1.0.1   | First major version |
 
 ## Demo & Examples
@@ -211,7 +212,7 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | `disableListClass`            | `No` | Adds class to each `li` items. Depends on `disableListFn` function or `disableProperty`  |
 | `inputLabelClass`             | `No` | Adds class to `<label>` field |
 | `inputLabelContainerClass`    | `No` | Adds class to parent div of `<label>` field |
-
+| `viewMoreClass`               | `No` | Adds class to View More `li` item 
 import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
 
 ```ts
@@ -252,7 +253,7 @@ customClassType: CustomClassType = {
 | `noResultStyle`      | `No` | Adds style to separate `li` item to show no result message. |
 | `inputLabelStyle`      | `No` | Adds style to `<label>` field |
 | `inputLabelContainerStyle`    | `No` | Adds style to parent div of `<label>` field |
-
+| `viewMoreStyle`      | `No` | Adds style to View More `li` item. |
 
 import `CustomNgStyleType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
 

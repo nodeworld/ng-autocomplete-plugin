@@ -70,14 +70,14 @@ describe('AutocompleteComponent', () => {
   /* Testcase to check if dropdown list is visible. */
   it("Expect dropdown list is visible or opened on focus.", () => {
     component.ngOnInit();
-    component.onFocus();
+    component.handleOnFocusEvent(null);
     expect(component.isAutoCompleteDivClicked).toBeTrue();
   });
 
   /* Testcase to check if dropdown list is not visible after closed. */
   it("Expect dropdown list is not visible when clicked closed.", () => {
     component.ngOnInit();
-    component.onFocus();
+    component.handleOnFocusEvent(null);
     component.closeAutoComplete();
     expect(component.isAutoCompleteDivClicked).toBeFalse();
   });
@@ -160,7 +160,7 @@ describe('AutocompleteComponent', () => {
     component.dropdownData= [];
     component.noSearchResultMessage = message;
     component.ngOnInit();
-    component.onFocus();
+    component.handleOnFocusEvent(null);
     const text = debugElement.query(By.css(".noSearchResult")).nativeElement;
     fixture.detectChanges();
     expect(text.textContent).toContain(message);
@@ -170,7 +170,7 @@ describe('AutocompleteComponent', () => {
   it("Expect to call emit event on dropdown select", () => {
     component.dropdownData= simpleArrayData;
     component.ngOnInit();
-    component.onFocus();
+    component.handleOnFocusEvent(null);
     spyOn(component, "closeAutoComplete").and.stub();
     spyOn(component.emitSelectedValue, 'emit').and.stub();
     component.selectedItem("Apple");
@@ -181,7 +181,7 @@ describe('AutocompleteComponent', () => {
   it("Expect to close autocomplete after dropdown is selected.", () => {
     component.dropdownData= simpleArrayData;
     component.ngOnInit();
-    component.onFocus();
+    component.handleOnFocusEvent(null);
     spyOn(component.emitSelectedValue, 'emit').and.stub();
     component.selectedItem("Apple");
     expect(component.isAutoCompleteDivClicked).toBeFalse();
@@ -193,7 +193,7 @@ describe('AutocompleteComponent', () => {
     component.ngOnInit();
     component.triggerApiLoadEvent = true;
     spyOn(component.emitApiLoadEvent, 'emit').and.stub();
-    component.nextSet(component.dropdownData);
+    component.nextSet();
     expect(component.emitApiLoadEvent.emit).toHaveBeenCalled();
   });
 
@@ -220,6 +220,7 @@ describe('AutocompleteComponent', () => {
     }
     component.dropdownData= data;
     component.ngOnInit();
+    component.handleOnFocusEvent(null);
     expect(component.filteredData.length).toBe(1000);
   });
 
@@ -228,7 +229,6 @@ describe('AutocompleteComponent', () => {
       component.dropdownData = simpleArrayData;
       component.defaultValue = 'kiwi';
       component.ngOnInit();
-      component.setDefaultValueIfPresent();
       expect((component.defaultValue + '').toLowerCase()).toEqual((component.searchValue + '').toLowerCase());
     });
 
