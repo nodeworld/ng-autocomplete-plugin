@@ -6,21 +6,38 @@ A simple, powerful, lightweight and customizable autocomplete tool programmed fo
 ## Recommended Angular version 
 
 Angular 14+
-    
+
 
 ## Whats better in this package?
 
-- Lightweight
+- Lightweight module
 - No 3rd party packages installed
+- Ability to use 3rd party style packages like bootstrap, tailwind or any css libraries. (You can update the classes from your component)
 - No angular material or cdk library
 - Supports large data set
 - Customizable scroll functionality
 - Supports custom events
 - Easy virtual scrolling for large data set without 3rd party
 - Custom classes and ng-styles are allowed
-- Ability to use 3rd party style packages like bootstrap, tailwind or any css libraries. (You can update the classes from your component)
 - 22+ solid test cases to validate the module
 - Eventful module.
+
+## What's new in 2.0.0 ?
+
+- Search algorithm has been redefined without impacting prior versions.
+- Added `View More` to List dropdown at the end of the list as an alternative to call API when reaching the end of scroll.
+- Now the developers who consume this package can decide how they should trigger an API Call. Using `View More`, or triggering API Call when reaching end of scroll. Both can be configured as well. Refer below for more information.
+
+
+## How to make best use of this package ?
+
+Read the full documentation without skipping, to know the flexibility of this module and refer the examples provided. Apart from the general use, this package comes handy when
+
+- Lazy loading is required. A custom function can be executed from the application which may be an API call with offset or paginated params or any other custom function that is suitable for the requirement.
+- Effortless styling of the input field and dropdown using custom css, or with libraries like bootstrap, tailwind and so on.
+- Handling large dataset with or without lazy load configuration
+- When `triggerApiLoadEvent` is set to `true`, its developers responsibility to set it as `false` once the custom function is executed and expected result is achieved. 
+- If `totalRecords` is known during the initialization of the module, the module will act pro-actively based on this input and will not call any custom functions once the `totalRecords` match the actual dropdownData and when scroll is complete.
 
 ## Installation
 
@@ -31,7 +48,7 @@ Install ng-autocomplete-plugin with npm
 
   or
 
-   npm i ng-autocomplete-plugin
+  npm i ng-autocomplete-plugin
 ```
 
 ## Running Tests
@@ -49,9 +66,10 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `1.0.3`  | Recommended. Updated readme file with few changes. |
-| 1.0.2   | Recommended. Only Read me file updated. |
-| 1.0.1   | First major version |
+| `2.0.0`  | Recommended. Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |
+| 1.0.3    | Updated readme file with few changes. |
+| 1.0.2    | Only Read me file updated. |
+| 1.0.1    | First major version |
 
 ## Demo & Examples
 
@@ -64,8 +82,6 @@ To run tests, run the following command
 | Turn off performance calculation during scroll  | [Turn off performance calculation during scroll](https://stackblitz.com/edit/angular-ivy-mqghge)|
 | Disabling a list in dropdown| [Disabling a list in dropdown](https://stackblitz.com/edit/angular-ivy-cnzhan)|
 
-
-
 ## API Usage
 
 #### Input decorators
@@ -74,29 +90,33 @@ To run tests, run the following command
 | -------- | ------- | ------- | ------- |
 | `dropdownData` | `string[] or object[]`  | **Yes**. | Accepts array of strings or numbers or array of objects |  |
 | `objectProperty` | `string` |**_Yes_** | Required only if `dropdownData` is object[]. Helps to display dropdown value in dropdown list. |
-| `placeholder` | `string` | `No` | Custom placeholder for auto-complete. |
+| `placeholder` | `string` | `No` | Custom placeholder for autocomplete input field. |
 | `defaultValue` | `string` or `object` | `No` | To pre-select a value from dropdown. |
-| `initialVisibleData` | `number`| `No` | Displays 1000 records in dropdown by default. Can be changed as per project convenience. |
+| `initialVisibleData` | `number`| `No` | Displays 1000 records in dropdown by default. Can be changed as per project requirement. |
 | `scrollThreshold` | `number` | `No` | 3 by default. Helps to boost performance. It controls the scroll data and removes top or botton records during user scroll based on the scrollThreshold & initialVisibleData configured. Check below for more details. |
 |`totalRecords` | `number` | `No` | If total number of records is known, totalRecords can be provided which will avoid extra events getting executed.
 |`disableProperty` | `string` | `No` | To disable specific dropdown list item in dropdown. User cannot select the dropdown if disabled. This property can be used for object[] dropdown and `disableProperty` should be one of the boolean property in object|
-|`disableListFn` |`Function` |`No` | If disable a list item should be calculated dynamically using a function and custom code, assign customized function to `disableListFn`. disableListFn accepts two parameters (index, data)|
+|`disableListFn` |`Function` |`No` | If disabling a list item should be calculated dynamically using a function and custom code, assign customized function to `disableListFn`. disableListFn accepts two parameters (index, data)|
 |`searchFn` |`Function` |`No` | Customized search function. Customized search function accepts one parameter, `event`. On keyUp, the customized search function will be called to perform custom execution.|
 |`isNumber` |`boolean` |`No` | If the displayed list is number, then sending `isNumber` as true will help to search the list efficiently |
 |`noSearchResultMessage` |`string` |`No` | By default **No results found** message will be displayed when search result is 0. It can be changed with this input property.  |
 |`customTrackBy` | `Function` |`No` | Custom ngFor trackBy Function|
-|`isAutoCompleteDisabled` |`boolean` |`No` | Default value is false. If updated as true, the input field gets disabled. |
+|`isAutoCompleteDisabled` |`boolean` |`No` | Default is `false`. When set to `true`, the input field gets disabled. |
+|`isCustomSpinner` |`boolean` |`No` | Default is `false`. When set to `true`, custom spinner can be implemented with custom class. |
 |`customClass` | `object` |`No` | Allows custom class styling at various dom levels. Check below for more information |
 |`customStyle` | `object` |`No` | Allows custom ng-style. Check below for more information |
 |`showdropDownArrow` | `boolean` |`No` | Default is `true`. Show or hide dropdown icon in autocomplete field.  |
 |`showClearOption` |`boolean` |`No` | Default is `true`. Shows clear option to allow the user to reset or clear the selected value. |
-|`showLoadingSpinner` | `boolean`|`No` | Default is `false`. Shows the spinner at the botton of the list if lazy loaded. Use custom spinner for better flexibility and make sure `showLoadingSpinner` is set to true for custom spinner. |
-| `triggerBlurEvent`|`boolean` |`No` | Default is false. When set to true, it emits an output event `emitBlurEvent` during focusOut  |
+|`showLoadingSpinner` | `boolean`|`No` | Default is `true`. Shows the spinner at the botton of the list during lazy loading API call. If set to `false`, spinner will not be shown. |
+| `triggerBlurEvent`|`boolean` |`No` | Default is `false`. When set to `true`, it emits an output event `emitBlurEvent` during focusOut  |
 |`triggerApiLoadEvent` |`boolean` |`No` | Default is `false`. If dropdown list is loaded through API via lazy loading, this can be set as true, it emits an event `emitApiLoadEvent`. When the output event is emitted, user can take care of loading the dropdown data further.|
-|`triggerAutoCompleteOpenEvent` |`boolean` |`No` | Default is false. When set to true, it emits an output event `emitAutoCompleteOpenEvent` when auto-complete dropdown list opens. |
-|`triggerSearchEvent` |`boolean` |`No` | Default is false. When set to true, emits an output event `emitSearchEvent` whenever user types and search. |
-|`triggerClearSelectionEvent` |`boolean` |`No` | Default is false. When set to true, emits an output event `emitClearSelectedEvent` whenever selected field is cleared.  |
-|`isScrollThresholdRequired`|`boolean`|`No` | Default is true. If initialVisibleData and scrollThreshold is performance calculation is not required, set it to false. See below for more information.|
+|`triggerAutoCompleteOpenEvent` |`boolean` |`No` | Default is `false`. When set to `true`, it emits an output event `emitAutoCompleteOpenEvent` when auto-complete dropdown list opens. |
+|`triggerSearchEvent` |`boolean` |`No` | Default is `false`. When set to `true`, emits an output event `emitSearchEvent` whenever user types and search. |
+|`triggerClearSelectionEvent` |`boolean` |`No` | Default is `false`. When set to `true`, emits an output event `emitClearSelectedEvent` whenever selected field is cleared.  |
+|`isScrollThresholdRequired`|`boolean`|`No` | Default is `true`. If initialVisibleData and scrollThreshold is performance calculation is not required, set it to `false`. See below for more information.|
+|`inspectAutoCompleteList`|`boolean`|`No` | Default is `false`. When set to `true`, autocomplete dropdown will not be closed or hidden during onBlur or onFocusOut events. This is intended only for debugging and development purposes. For production it should be always `false` to avoid interruption. |
+|`showViewMore`|`boolean`|`No` | Default is `true`. `View More` List will be shown at the end of dropdown if user has enabled lazy loading (`triggerApiLoadEvent`). `View More` will appear only when API call is to be executed. |
+|`optViewMoreOnlyForApiCall`|`boolean`|`No` | Default is `false`. When set to `true`, API Call will not be executed on reaching the end of the scroll, instead `View More` button has to be clicked to call the API or any custom function. |
 
 #### Output decorators
 | Output    | Required  | Description |
@@ -178,7 +198,7 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 
 ## CSS Classes used in npm-autocomplete-plugin html template
 
-#### This is for informational purpose only. Be cautious if you are overriding these CSS as it may affect dropdown style if updated incorrectly. Make sure you use ::ng-deep or host when updating the internal css or by turning off encapsulation.
+#### This is for informational purpose only. Be cautious if you are overriding these CSS as it may affect dropdown style if updated incorrectly.
 
 ###### It is always recommended to add class through customClass or customStyle Input() properties.
 
@@ -211,8 +231,8 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | `disableListClass`            | `No` | Adds class to each `li` items. Depends on `disableListFn` function or `disableProperty`  |
 | `inputLabelClass`             | `No` | Adds class to `<label>` field |
 | `inputLabelContainerClass`    | `No` | Adds class to parent div of `<label>` field |
-
-import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
+| `viewMoreClass`               | `No` | Adds class to View More `li` item 
+import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use. Write your custom class in global css file or use ::ng-deep from specific components.
 
 ```ts
 import { CustomClassType } from 'ng-autocomplete-plugin';
@@ -252,7 +272,7 @@ customClassType: CustomClassType = {
 | `noResultStyle`      | `No` | Adds style to separate `li` item to show no result message. |
 | `inputLabelStyle`      | `No` | Adds style to `<label>` field |
 | `inputLabelContainerStyle`    | `No` | Adds style to parent div of `<label>` field |
-
+| `viewMoreStyle`      | `No` | Adds style to View More `li` item. |
 
 import `CustomNgStyleType` Type into your app, to see the custom class types available. Its optional, but would be good to use.
 
@@ -286,7 +306,7 @@ To add a custom spinner, do the following. Recommended to use custom spinner to 
 Update @Input() properties like below
 
 ```ts
-showLoadingSpinner = true; // Turn this ON so that module will show the spinner.
+showLoadingSpinner = true; // Turn this ON so that module will show the spinner. By default it is ON (true)
 ```
 
 ```ts
@@ -317,7 +337,7 @@ A flexible option is provided to add custom functionality in the input text fiel
     <span textField class="YOUR_CLASS">YOUR_CONTENT</span>
 </ng-autocomplete>
 ```
-`showdropDownArrow` and `showClearOption` can be passed as false for better placement of the customized ng-content.
+`showdropDownArrow` and `showClearOption` can be set as false for better placement of the customized ng-content.
 
 ##### textField in the span represents ng-content select attribute
 
@@ -336,17 +356,21 @@ A flexible option is provided to add custom functionality in the input text fiel
 | `ariaListContainer`   | @Input    | `No` | Adds ARIA label to list container `div`. |
 | `ariaInputLabel`      | @Input    | `No` | Adds ARIA label to `label field`. |
 
-## Support
+## Change Logs and version history
 
-Please raise an issue in github, if you find any.
-
-
-## Roadmap
-
-Will deploy more features in future.
-
-Will be working on adding similar autocomplete feature in VUE and React.
+Refer the change history by viewing this link - [CHANGELOG](https://github.com/nodeworld/ng-autocomplete-plugin/blob/release/CHANGELOG.md)
 
 ## Github link
 
 Github Link - [ng-autocomplete-plugin](https://github.com/nodeworld/ng-autocomplete-plugin)
+
+## Support
+
+Please raise an issue in github repository
+
+Github Link - [Raise an issue](https://github.com/nodeworld/ng-autocomplete-plugin/issues)
+
+## Roadmap
+
+- Multiselect dropdown before Q1 2025
+- Extensive search - Ability to search entire object in the list
