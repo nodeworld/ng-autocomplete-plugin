@@ -27,7 +27,8 @@ class="auto-complete-textfield-container">
     [attr.aria-label]="ariaInputField"
     name="searchValue"
     (input)="!searchFn ? onSearch($event) : customSearch($event)"
-    (focus)="onFocus()"
+    (focus)="handleOnFocusEvent($event)"
+    (blur)="handleOnBlurEvent($event)"
     [disabled]="isAutoCompleteDisabled"
     class="auto-complete-textfield"
     [ngClass]="customClass && customClass.inputFieldClass ? customClass.inputFieldClass : ''"
@@ -35,7 +36,7 @@ class="auto-complete-textfield-container">
     type="text"
     autocomplete="off"
     [placeholder]="placeholder"/>
-        <span *ngIf="showdropDownArrow" class="arrow down" (click)="onFocus()"></span>
+        <span tabindex="0" *ngIf="showdropDownArrow" class="arrow down" (click)="toggleDropdown($event)"></span>
         <span (click)="clearSearch()" *ngIf="searchValue && showClearOption"
         class="auto-complete-remove-selection">&times;</span>
         <ng-content select="[textField]"></ng-content>
@@ -55,6 +56,7 @@ class="auto-complete-textfield-container">
           <ng-container
           *ngFor="let data of filteredData; let i = index; trackBy: customTrackBy ? customTrackBy: identify">
             <li
+              tabindex="0"
               [attr.aria-disabled]="disableListFn ? disableListFn(i, data) : (disableProperty) ? data[disableProperty] : false"
               [ngClass]="[customClass && customClass.dropdownListClass ? customClass.dropdownListClass : '',
                 ((!customClass || !customClass.disableListClass) && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]))) ? 'disable-list-element' : '',
@@ -70,15 +72,26 @@ class="auto-complete-textfield-container">
         <li *ngIf="showLoadingSpinner && showDataLoader && isCustomSpinner" class="auto-complete-list-spinner">
           <ng-content select="[customSpinner]"></ng-content>
         </li>
-        <ng-container *ngIf="filteredData.length <= 0">
           <li
+            *ngIf="filteredData.length <= 0"
             [attr.aria-label]="ariaNoSearchResult"
             [ngClass]="customClass && customClass.noResultClass ? customClass.noResultClass : ''"
             class="autocomplete-data-list noSearchResult"
             [ngStyle]="customStyle && customStyle.noResultStyle ? customStyle.noResultStyle : null">
             {{noSearchResultMessage}}
           </li>
-        </ng-container>
+            <li
+            *ngIf="
+            showViewMore &&
+            !isEventEmitted &&
+            !showDataLoader &&
+            triggerApiLoadEvent &&
+            displayViewMoreButton"
+            tabindex="0"
+            (click)="onViewMore($event); $event.stopPropagation()"
+            [ngClass]="customClass && customClass.viewMoreClass ? customClass.viewMoreClass : ''"
+            [ngStyle]="customStyle && customStyle.viewMoreStyle ? customStyle.viewMoreStyle : null"
+            class="autocomplete-data-list view-more">{{ viewMoreText }}</li>
       </ul>
     </div>
   </div>

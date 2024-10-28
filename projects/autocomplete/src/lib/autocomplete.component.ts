@@ -34,7 +34,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() isCustomSpinner = false;
 
-  @Input() showLoadingSpinner = false; // option to enable spinner for api lazy load.
+  @Input() showLoadingSpinner = true; // option to enable spinner for api lazy load.
   showDataLoader = false;
 
   @Input() customClass: CustomClassType = {};
@@ -74,7 +74,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() disableListFn: Function | undefined;
 
-  @Input() isScrollThresholdRequired = false;
+  @Input() isScrollThresholdRequired = true;
 
   @Input() ariaRole = 'autocomplete';
 
@@ -94,8 +94,15 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() defaultValue: any | undefined;
 
+  @Input() inspectAutoCompleteList = false;
+
+  @Input() viewMoreText = 'View more';
+
+  @Input() showViewMore = true;
+
+  @Input() optViewMoreOnlyForApiCall = false;
+
   scrollEventListener: any;
-  clickEventListener: any;
 
   isScrolling: any;
 
@@ -104,262 +111,314 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   searchValue: any;
 
   scrollDownIndex = 0;
+  
+  isInputFieldDirty = false;
+
+  isEventEmitted = false;
+
+  isViewMoreApiBeingExecuted = false;
 
   theTimeOut: any;
+
+  displayViewMoreButton = false;
 
   loaderTimer: Subscription | undefined ;
   scrollTimer: Subscription | undefined ;
 
+  numberRegex = /^\-?\d+\.?\d*$/;
+
   constructor() {}
+
+  ngOnInit() {
+    if (this.defaultValue) {
+      if (this.objectProperty) {
+        let getValue;
+        if (typeof this.defaultValue === 'object') {
+          if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue[this.objectProperty!]))) {
+            getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === (this.defaultValue[this.objectProperty!] + '')?.toString().toLowerCase().trim());
+          } else {
+            getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === this.defaultValue[this.objectProperty!]?.toString().toLowerCase().trim());
+          }
+        } else {
+          if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue))) {
+            getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === (this.defaultValue + '')?.toString().toLowerCase().trim());
+          } else {
+            getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === this.defaultValue?.toString().toLowerCase().trim());
+          }
+        }
+        if (getValue) {
+          this.searchValue = getValue[this.objectProperty];
+        }
+      } else {
+        let getValue;
+        if (typeof this.defaultValue === 'object') {
+          throw Error('defaultValue being an object, expects objectProperty value.')
+        } else {
+          getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === this.defaultValue?.toString().toLowerCase().trim());
+        }
+        if (getValue) {
+          this.searchValue = getValue;
+        }
+      }
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.isEventEmitted) { return; }
+    if (changes['dropdownData']['previousValue'] && changes['dropdownData']['currentValue'].length > changes['dropdownData']['previousValue'].length) {
+      this.isEventEmitted = false;
+      this.showSpinner(false);
+      if (this.isViewMoreApiBeingExecuted) {
+        this.isViewMoreApiBeingExecuted = false;
+      }
+      if (this.searchValue) {
+        const dropdownData = this.updateDropdownDataOnSearch(this.searchValue);
+        this.searchedData = dropdownData;
+        this.findThresholdAndSetFilteredData(dropdownData);
+      } else {
+        this.findThresholdAndSetFilteredData(this.dropdownData);
+      }
+    }
+  }
 
   ngAfterViewInit() {
     this.scrollEventListener = this.unOrderedList.nativeElement.addEventListener('scroll', (event: any) => {
       if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
-        this.loadNextSetData();
-      } else if (this.unOrderedList.nativeElement.scrollTop < 10 && this.filteredData.length > this.initialVisibleData) {
-        this.removeTopData();
-      }
-    });
-
-    this.clickEventListener = window.addEventListener('click', (event: any) => {   
-      if (!this.autoCompleteContainer.nativeElement.contains(event.target)){
-        this.closeAutoComplete();
-      }
-    });
-
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['dropdownData']['previousValue']) {
-      /* No need to update scrollIndex here as scroll event listener itself getting executed. */
-      if (changes['dropdownData']['currentValue'].length > changes['dropdownData']['previousValue'].length) {
-        this.showSpinner(false);
-        if (this.loaderTimer) {
-          this.loaderTimer.unsubscribe();
-          this.loaderTimer = undefined;
-        }
-        this.unOrderedList.nativeElement.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight! * 50) / 100));
-      }
-    }
-  }
-
-  showSpinner(bool: boolean) {
-    if (this.showLoadingSpinner) { this.showDataLoader = bool; }
-    if (bool) {
-      this.unOrderedList.nativeElement.scrollTop = this.unOrderedList.nativeElement.scrollHeight;
-    }
-  }
-
-  nextSet(data: any) {
-    this.scrollTimer?.unsubscribe();
-    if (this.triggerApiLoadEvent && (!this.searchValue || this.searchValue !== '')
-      && this.filteredData[this.filteredData.length - 1] === this.dropdownData[this.dropdownData.length - 1]) {
-      let flag = false;
-      if (this.objectProperty) {
-        if (this.filteredData[this.filteredData.length - 1][this.objectProperty] === this.dropdownData[this.dropdownData.length - 1][this.objectProperty]) {
-          flag = true;
-        }
-      } else if (this.filteredData[this.filteredData.length - 1] === this.dropdownData[this.dropdownData.length - 1]) {
-        flag = true;
-      }
-      if (flag) {
-        if (this.totalRecords && this.totalRecords === this.dropdownData.length) {
+        if ((typeof this.totalRecords !== 'undefined' && this.scrollDownIndex >= this.totalRecords)) {
+          this.displayViewMoreButton = false;
           return;
-        }
-        if(this.showDataLoader) { return; }
-        this.showSpinner(true);
-        this.emitApiLoadEvent.emit({ dataIndex: data.length });
-        this.loaderTimer = timer(150).subscribe(() => {
-          this.unOrderedList.nativeElement.scrollTop = this.unOrderedList.nativeElement.scrollHeight;
-        });
-        return;
+      }
+      this.loadNextSetData();
+      } else if (this.unOrderedList.nativeElement.scrollTop < 10 && this.filteredData.length > this.initialVisibleData) {
+        this.initData();
+      }
+    });
+  }
+
+  handleOnFocusEvent(event: any) {
+    if (this.isAutoCompleteDisabled) { return; }
+    this.isAutoCompleteDivClicked = true;
+    const getListId = this.listContainer.nativeElement.style;
+    const getInputId = document.getElementById('searchInput')?.clientWidth;
+    if (getListId && getInputId) {
+      getListId.width = getInputId + 'px';
+    }
+    if (this.emitAutoCompleteOpenEvent) {
+      this.emitAutoCompleteOpenEvent.emit(event)
+    }
+    if (this.filteredData.length <= 0) {
+      if (this.isInputFieldDirty) {
+        this.onSearch(null);
+      } else {
+        this.setData();
       }
     }
-    if (this.scrollDownIndex >= data.length) {
+    this.isDisplayViewButton();
+  }
+
+  handleOnBlurEvent(event: any) {
+    if (this.inspectAutoCompleteList) { return; }
+    if ((event?.relatedTarget as HTMLElement)?.classList?.contains('arrow')) {
       return;
     }
-    const dt = data.slice(this.scrollDownIndex, this.scrollDownIndex + this.initialVisibleData);
-    this.filteredData.push(...dt);
-    this.scrollDownIndex = this.scrollDownIndex + dt.length;
-    if (!this.isScrollThresholdRequired) { 
-      this.unOrderedList.nativeElement.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
+    if ((event?.relatedTarget as HTMLElement)?.classList?.contains('unorder-list')) {
+      if (!this.searchValue) {
+        document.getElementById('searchInput')?.focus();
+      }
       return;
     }
-    const getThresholdData = Math.ceil(this.filteredData.length / this.scrollThreshold);
-    if (getThresholdData >= this.initialVisibleData) {
-      this.filteredData.splice(0, this.initialVisibleData);
-      this.unOrderedList.nativeElement.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
+    if ((event?.relatedTarget as HTMLElement)?.classList?.contains('view-more')) {
+      if (!this.searchValue) {
+        document.getElementById('searchInput')?.focus();
+      }
       return;
     }
+    if ((event?.relatedTarget as HTMLElement)?.classList?.contains('autocomplete-data-list')) {
+      return;
+    }
+    if (this.inspectAutoCompleteList) {
+      console.warn(`You have turned off blur event in autocomplete module which will not close autocomplete list. Hope you know what you are doing. Update to false after inspect is complete.`)
+      return;
+    }
+    this.closeAutoComplete();
+    this.isAutoCompleteDivClicked = false;
+    this.filteredData = [];
+
+  }
+
+  initData() {
+    const data = this.isInputFieldDirty && this.searchedData.length > 0 && this.searchValue ? this.searchedData.slice(0, this.initialVisibleData) : this.dropdownData.slice(0, this.initialVisibleData);
+    this.filteredData = data;
+    this.scrollDownIndex = data.length;
+    return;
   }
 
   loadNextSetData() {
     try {
-      if (!this.isAutoCompleteDivClicked) {
-        return;
-      }
-      const data = this.searchValue && this.searchedData.length > 0 ? this.searchedData : this.dropdownData;
-      if (data.length <= this.initialVisibleData) {
+      if (!this.isAutoCompleteDivClicked) { return; }
+      if (this.dropdownData.length <= this.initialVisibleData && !this.triggerApiLoadEvent) {
         return;
       }
       if (this.scrollTimer) { this.scrollTimer.unsubscribe(); }
       this.scrollTimer = timer(150).subscribe(() => {
-        this.nextSet(data);
+        this.nextSet();
       });
     } catch (err) {
       console.log(err);
     }
   }
 
-  removeTopData() {
-    const data = this.searchValue && this.searchedData.length > 0 ? this.searchedData : this.dropdownData;
-    if (data.length <= 0) { return; }
-    this.filteredData = data.slice(0, this.initialVisibleData);
-    this.scrollDownIndex = 0;
-  }
-
-  ngOnInit() {
-    try {
-      if (this.scrollThreshold <= 0) {
-        this.scrollThreshold = 1;
-      }
-      this.setData();
-      this.setDefaultValueIfPresent();
-    } catch (err) {
-      console.log(err);
+  nextSet() {
+    const ulHeight = this.unOrderedList.nativeElement.scrollHeight;
+    const containerHeight = this.listContainer.nativeElement.scrollHeight;
+    const calculateScrollDiff = Math.ceil((containerHeight * 100) / ulHeight);
+    if (calculateScrollDiff > 70) {
+        return;
     }
-  }
-
-  setDefaultValueIfPresent() {
-    if (this.defaultValue === undefined || this.defaultValue === null || this.defaultValue === '') { return; }
-    if (this.defaultValue.constructor.name === 'Array') { return; }
-    if (typeof this.defaultValue === 'object') {
-      if (!this.objectProperty) { return; }
-      const findDefaultValue = this.dropdownData.find(data => data[this.objectProperty!] === this.defaultValue[this.objectProperty!])
-      if (findDefaultValue) {
-        this.searchValue = findDefaultValue[this.objectProperty!];
+    let dropdownData;
+    dropdownData = this.searchedData.length > 0 ? [...this.searchedData] : [...this.dropdownData];
+    if (this.dropdownData.length === this.scrollDownIndex || this.searchedData.length === this.scrollDownIndex) {
+      if (!this.isEventEmitted && this.triggerApiLoadEvent) {
+        if (this.optViewMoreOnlyForApiCall) {
+          this.displayViewMoreButton = true;
+          this.scrollTimer = timer(150).subscribe(() => {
+            this.unOrderedList.nativeElement?.scrollTo(0, this.unOrderedList.nativeElement.scrollHeight + 10);
+          });
+          return;
+        }
+        this.emitApiLoadEvent.emit({ dataIndex: this.dropdownData.length });
+        this.isEventEmitted = true;
+        if (this.showLoadingSpinner) {
+          this.showSpinner(true);
+        this.scrollTimer = timer(150).subscribe(() => {
+          this.unOrderedList.nativeElement?.scrollTo(0, this.unOrderedList.nativeElement.scrollHeight + 10);
+        });
+        }
       }
       return;
     }
+    this.findThresholdAndSetFilteredData(dropdownData);
+  }
+
+  setFilteredDataIfSearchValueExists(dropdownData: any[]) {
+    let getNextDataSet: any;
+    getNextDataSet = dropdownData.slice(this.scrollDownIndex, this.scrollDownIndex + this.initialVisibleData);
+    if (getNextDataSet.length > 0) {
+      this.scrollDownIndex = this.scrollDownIndex + getNextDataSet.length;
+      if (this.isInputFieldDirty && (this.searchValue && this.searchValue !== '')) {
+        if (this.objectProperty) {
+          getNextDataSet = getNextDataSet.filter((dt: any) => dt[this.objectProperty!]?.toString().toLowerCase().includes(this.searchValue?.toString()?.toLowerCase().trim()));
+        } else {
+          getNextDataSet = getNextDataSet.filter((dt: any) => dt?.toString().toLowerCase().includes(this.searchValue?.toString()?.toLowerCase().trim()));
+        }
+      }
+      this.filteredData.push(...getNextDataSet);
+    }
+  }
+
+  findThresholdAndSetFilteredData(dropdownData: any[]) {
+    if (dropdownData.length > this.filteredData.length) {
+      const getThresholdData = Math.ceil(this.filteredData.length / this.scrollThreshold);
+      if (this.isScrollThresholdRequired && getThresholdData >= this.initialVisibleData) {
+        this.filteredData.splice(0, this.initialVisibleData);
+        this.setFilteredDataIfSearchValueExists(dropdownData); 
+      } else {
+        this.setFilteredDataIfSearchValueExists(dropdownData); 
+      }
+      this.unOrderedList.nativeElement?.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
+      // this.scrollTimer = timer(150).subscribe(() => {
+      //   this.unOrderedList.nativeElement?.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
+      // });
+    }
+  }
+
+  updateDropdownDataOnSearch(searchedValue: any) {
+    let dropdownData;
     if (this.objectProperty) {
-      const findDefaultValue = this.dropdownData.find(data => (data[this.objectProperty!] + '').toLowerCase() === this.defaultValue.toLowerCase());
-      if (findDefaultValue) {
-        this.searchValue = findDefaultValue[this.objectProperty!];
+      if (this.isTypeNumber()) {
+        dropdownData = this.dropdownData.filter(dt => (dt[this.objectProperty!] + '')?.includes(searchedValue));
+      } else {
+        dropdownData = this.dropdownData.filter(dt => dt[this.objectProperty!]?.toString().toLowerCase().includes(searchedValue.toLowerCase().trim()));
       }
-      return;
-    }
-    const findDefaultValue = this.dropdownData.find(data => (data + '').toLowerCase() === (this.defaultValue + '').toLowerCase())
-    if (findDefaultValue) {
-      this.searchValue = findDefaultValue;
-    }
-    return;
-  }
-
-  closeAutoComplete() {
-      this.unOrderedList.nativeElement.scrollTo(0, 0);
-      this.filteredData = [];
-      this.scrollDownIndex = 0;
-      this.isAutoCompleteDivClicked = false;
-      if (this.triggerBlurEvent) {
-        this.emitBlurEvent.emit(true);
+    } else {
+      if (this.isTypeNumber()) {
+        dropdownData = this.dropdownData.filter(dt => (dt + '')?.includes(searchedValue + ''));
+      } else {
+        dropdownData = this.dropdownData.filter(dt => dt?.toString().toLowerCase().includes(searchedValue?.toLowerCase().trim()));
       }
+    }
+    return dropdownData;
   }
 
   setData() {
-    if (this.dropdownData.length <= this.initialVisibleData) {
-      this.filteredData = [...this.dropdownData];
-    } else {
-      this.filteredData = this.dropdownData.slice(0, this.initialVisibleData);
+    const data = [...this.dropdownData];
+    if (data.length <= this.initialVisibleData) {
+        this.filteredData = data;
+        this.scrollDownIndex = data.length;
+        return;
     }
-    this.scrollDownIndex = this.scrollDownIndex + this.filteredData.length;
-  }
-
-  identify(index: number, item: any) { return item.index; }
-
-  onFocus() {
-    try {
-      if(this.isAutoCompleteDivClicked) { return; }
-      this.isAutoCompleteDivClicked = true;
-      if (this.filteredData.length <= 0) { this.setData(); }
-      /* Set width of autocomplete div based on inherited width from parent */
-      this.listContainer.nativeElement.style.width = (this.fieldContainer.nativeElement.offsetWidth + 5) + 'px';
-      if (this.triggerAutoCompleteOpenEvent) {
-        this.emitAutoCompleteOpenEvent.emit({open: true});
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  selectedItem(data: any) {
-    try {
-      if (this.objectProperty && data[this.objectProperty]) {
-        this.searchValue = data[this.objectProperty];
-      } else {
-        this.searchValue = data;
-      }
-      this.closeAutoComplete();
-      this.emitSelectedValue.emit(data);
-    } catch(err) {
-      console.log(err);
-    }
-  }
-
-  clearSearch() {
-    this.searchValue = null;
-    if (this.triggerClearSelectionEvent) {
-      this.emitClearSelectedEvent.emit({clear: true});
-    }
-  }
-
-  isInputEvent(event: any) {
-    if(event.constructor !== InputEvent) { return false; }
-    return true;
-  }
-
-  onSearch(event: any) {
-    try {
-      if(!this.isInputEvent(event)) { return; }
-      if (!this.searchValue || this.searchValue === '') {
-        this.filteredData = this.dropdownData.slice(0, this.initialVisibleData);
-        this.unOrderedList.nativeElement.scrollTo(0, 0);
-        this.scrollDownIndex = 0;
+    let getFirstSetData = data.slice(0, this.initialVisibleData);
+    this.scrollDownIndex = getFirstSetData.length;
+    if (this.isInputFieldDirty && this.isTypeNumber()) {
+      if (!this.isSearchValueANumber(this.searchValue)) {
+        this.filteredData = [];
         return;
       }
       if (this.objectProperty) {
-        if (!this.isNumber) {
-          this.searchedData = this.dropdownData.filter(dt => (dt[this.objectProperty!] + '').toLowerCase().includes(this.searchValue.toLowerCase()));
-        } else {
-          if (typeof Number(this.searchValue) !== 'number') {
-            this.filteredData = [];
-            return;
-          }
-          this.searchedData = this.dropdownData.filter(dt => (dt[this.objectProperty!] + '').toLowerCase().includes(this.searchValue));
-        }
+        getFirstSetData = getFirstSetData.filter(dt => dt[this.objectProperty!]?.includes(this.searchValue));
       } else {
-        if (!this.isNumber) {
-          this.searchedData = this.dropdownData.filter(dt => (dt + '').toLowerCase().includes(this.searchValue.toLowerCase()));
-        } else {
-          if (typeof Number(this.searchValue) !== 'number') {
-            this.filteredData = [];
-            return;
-          }
-          this.searchedData = this.dropdownData.filter(dt => (dt + '').toLowerCase().includes(this.searchValue));
-        }
+        getFirstSetData = getFirstSetData.filter(dt => dt?.includes(this.searchValue));
       }
-      if (this.searchedData.length > 0) {
-        if(this.searchedData.length > this.initialVisibleData) {
-          this.filteredData = this.searchedData.slice(0, this.initialVisibleData);
-        } else {
-          this.filteredData = [...this.searchedData];
-        }
-        this.unOrderedList.nativeElement.scrollTo(0, 0);
+    } else if (this.isInputFieldDirty && (this.searchValue && this.searchValue !== '')) {
+      if (this.objectProperty) {
+        getFirstSetData = getFirstSetData.filter(dt => dt[this.objectProperty!]?.toString().toLowerCase().includes(this.searchValue?.toString()?.toLowerCase().trim()));
       } else {
-        this.filteredData = [];
+        getFirstSetData = getFirstSetData.filter(dt => dt?.toString().toLowerCase().includes(this.searchValue?.toString()?.toLowerCase().trim()));
       }
-    } catch(err) {
-      console.log(err);
     }
+    this.filteredData = getFirstSetData;
+    return;
+  }
+
+  async onSearch(_event: any) {
+    let searchedValue: any;
+    if (this.isTypeNumber() && this.isSearchValueANumber(this.searchValue)) {
+      searchedValue = Number(this.searchValue);
+    } else {
+      searchedValue = this.searchValue;
+    }
+    if ((!this.searchValue || this.searchValue?.trim() === '')) {
+      this.searchedData = [];
+      this.initData();
+      this.unOrderedList.nativeElement?.scrollTo(0, 0);
+      return;
+    }
+    if (!this.isInputFieldDirty) {
+      this.isInputFieldDirty = true;
+    }
+    this.scrollDownIndex = 0; //reset
+    if (this.searchFn && typeof this.searchFn === 'function') {
+        const result = await this.searchFn(this.searchValue, this.dropdownData);
+        if (result && result.length > 0) {
+            this.searchedData = result;
+            const getFirstSetData = result.slice(0, this.initialVisibleData);
+            this.scrollDownIndex = this.scrollDownIndex + getFirstSetData.length;
+            this.filteredData = getFirstSetData;
+            this.isDisplayViewButton();
+            return;
+        }
+    }
+    const getSearchData = this.updateDropdownDataOnSearch(searchedValue);
+    if (getSearchData.length > 0) {
+      const getFirstSetData = getSearchData.slice(0, this.initialVisibleData);
+      this.scrollDownIndex = this.scrollDownIndex + getFirstSetData.length;
+      this.searchedData = getSearchData;
+      this.filteredData = getFirstSetData;
+      this.isDisplayViewButton();
+      return;
+    }
+    this.filteredData = [];
+    return;
   }
 
   async customSearch(event: any) {
@@ -372,21 +431,114 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  selectedItem(data: any) {
+    try {
+      if (this.objectProperty && data[this.objectProperty]) {
+        this.searchValue = data[this.objectProperty] + '';
+      } else {
+        this.searchValue = data + '';
+      }
+      this.closeAutoComplete();
+      this.isInputFieldDirty = false;
+      this.emitSelectedValue.emit(data);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  showSpinner(bool: boolean) {
+    if (this.showLoadingSpinner) { this.showDataLoader = bool; }
+    if (bool) {
+      this.unOrderedList.nativeElement.scrollTop = this.unOrderedList.nativeElement.scrollHeight;
+    }
+  }
+
+  closeAutoComplete() {
+    this.unOrderedList.nativeElement.scrollTo(0, 0);
+    this.filteredData = [];
+    this.scrollDownIndex = 0;
+    this.isAutoCompleteDivClicked = false;
+    if (this.triggerBlurEvent) {
+      this.emitBlurEvent.emit(true);
+    }
+    this.displayViewMoreButton = false;
+  }
+
   setDefaults() {
     this.filteredData = [];
     this.dropdownData = [];
     this.searchedData = [];
-    this.totalRecords = 0;
+    this.totalRecords = undefined;
     this.isAutoCompleteDivClicked = false;
     this.triggerClearSelectionEvent = false;
     this.showClearOption = false;
+    this.isInputFieldDirty = false;
     this.showSpinner(false);
     if (this.loaderTimer) { this.loaderTimer.unsubscribe(); }
     if(this.scrollTimer) { this.scrollTimer.unsubscribe(); }
     if (this.theTimeOut) { this.theTimeOut = null; }
     if (this.scrollEventListener) { document.removeEventListener('scroll', this.scrollEventListener, false); }
-    if (this.clickEventListener) { document.removeEventListener('click', this.clickEventListener, false); }
     if (this.searchFn) { this.searchFn = undefined; }
+  }
+
+  onViewMore(_event: any) {
+    if (this.triggerApiLoadEvent && !this.isEventEmitted) {
+      this.emitApiLoadEvent.emit({ dataIndex: this.dropdownData.length });
+      this.isEventEmitted = true;
+      this.isViewMoreApiBeingExecuted = true;
+      if (this.showLoadingSpinner) {
+        this.showSpinner(true);
+      }
+    }
+  }
+
+  /* This wont work for searchValue filter. check and fix*/
+  isDisplayViewButton() {
+    if (typeof this.totalRecords !== 'undefined' && this.dropdownData.length >= this.totalRecords) {
+      this.displayViewMoreButton = false;
+      return;
+    }
+    if (this.searchValue && this.searchValue !== '' && this.triggerApiLoadEvent && !this.isEventEmitted) {
+      this.displayViewMoreButton = true;
+      return;
+    }
+    if (this.scrollDownIndex >= this.dropdownData.length) {
+      this.displayViewMoreButton = true;
+      return;
+    }
+    this.displayViewMoreButton = false;
+    return;
+  }
+
+  toggleDropdown(event: any) {
+    if (this.isAutoCompleteDivClicked) {
+      this.handleOnBlurEvent(event);
+      return;
+    }
+    this.handleOnFocusEvent(event);
+    return;
+  }
+
+  isTypeNumber() {
+    return this.isNumber ? true : false;
+  }
+
+  isSearchValueANumber(value: any) {
+    return this.numberRegex.test(value);
+  }
+
+  identify(index: number, item: any) { return item.index; }
+
+  clearSearch() {
+    this.searchValue = null;
+    if (this.triggerClearSelectionEvent) {
+      this.emitClearSelectedEvent.emit({clear: true});
+    }
+  }
+
+  isInputEvent(event: any) {
+    if(event.constructor !== InputEvent) { return false; }
+    return true;
   }
 
   ngOnDestroy() {
