@@ -325,7 +325,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else {
         this.setFilteredDataIfSearchValueExists(dropdownData); 
       }
-      this.unOrderedList.nativeElement?.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
+      this.unOrderedList.nativeElement?.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 60) / 100));
       // this.scrollTimer = timer(150).subscribe(() => {
       //   this.unOrderedList.nativeElement?.scrollTo(0, Math.ceil((this.unOrderedList.nativeElement.scrollHeight * 50) / 100));
       // });
