@@ -81,6 +81,7 @@ To run tests, run the following command
 | Autocomplete With Tailwind    | [Autocomplete with tailwind](https://stackblitz.com/edit/starters-tailwind-by-ven-vcksuf)|
 | Turn off performance calculation during scroll  | [Turn off performance calculation during scroll](https://stackblitz.com/edit/angular-ivy-mqghge)|
 | Disabling a list in dropdown| [Disabling a list in dropdown](https://stackblitz.com/edit/angular-ivy-cnzhan)|
+| View More button for API lazy load| [View More button for API lazy load](https://stackblitz.com/edit/ng-autocomplete-view-more)|
 
 ## API Usage
 
