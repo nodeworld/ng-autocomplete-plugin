@@ -21,6 +21,7 @@ class="auto-complete-textfield-container">
   [ngStyle]="customStyle && customStyle.inputFieldContainerStyle ? customStyle.inputFieldContainerStyle : null"
   #fieldContainer>
   <input
+    #searchInput
     id="searchInput"
     [attr.role]="ariaRole"
     [(ngModel)]="searchValue"
@@ -68,7 +69,7 @@ class="auto-complete-textfield-container">
             </li>
         </ng-container>
         </ng-container>
-        <li *ngIf="showLoadingSpinner && showDataLoader && !isCustomSpinner" class="auto-complete-list-spinner"><span class="loader"></span></li>
+        <li *ngIf="showLoadingSpinner && showDataLoader && !isCustomSpinner" class="auto-complete-list-spinner"><span class="autocomplete-plugin-loader"></span></li>
         <li *ngIf="showLoadingSpinner && showDataLoader && isCustomSpinner" class="auto-complete-list-spinner">
           <ng-content select="[customSpinner]"></ng-content>
         </li>
