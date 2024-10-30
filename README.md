@@ -27,7 +27,8 @@ Angular 14+
 - Search algorithm has been redefined without impacting prior versions.
 - Added `View More` to List dropdown at the end of the list as an alternative to call API when reaching the end of scroll.
 - Now the developers who consume this package can decide how they should trigger an API Call. Using `View More`, or triggering API Call when reaching end of scroll. Both can be configured as well. Refer below for more information.
-
+- Renamed the internal class `loader`  to `autocomplete-plugin-loader` as `loader` class is too common name and may collide with other libraries.
+- Updated scroll event and resize event by using `Rerender2` to efficiently manage the event listeners.
 
 ## How to make best use of this package ?
 
@@ -232,7 +233,9 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | `disableListClass`            | `No` | Adds class to each `li` items. Depends on `disableListFn` function or `disableProperty`  |
 | `inputLabelClass`             | `No` | Adds class to `<label>` field |
 | `inputLabelContainerClass`    | `No` | Adds class to parent div of `<label>` field |
-| `viewMoreClass`               | `No` | Adds class to View More `li` item 
+| `viewMoreClass`               | `No` | Adds class to View More `li` item |
+
+
 import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use. Write your custom class in global css file or use ::ng-deep from specific components.
 
 ```ts
