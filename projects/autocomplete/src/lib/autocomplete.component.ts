@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, TrackByFunction, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, TrackByFunction, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { CustomClassType, CustomNgStyleType } from '../types/autocomplete-type';
 
@@ -70,6 +70,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   
   @ViewChild('fieldContainer') fieldContainer!: ElementRef<HTMLElement>;
 
+  @ViewChild('searchInput') searchInput!: ElementRef;
+
   @Input() searchFn: any;
 
   @Input() disableListFn: Function | undefined;
@@ -104,6 +106,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   scrollEventListener: any;
 
+  autocompleteWidthListener: any;
+
   isScrolling: any;
 
   isAutoCompleteDivClicked = false;
@@ -127,7 +131,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   numberRegex = /^\-?\d+\.?\d*$/;
 
-  constructor() {}
+  constructor(private renderer: Renderer2) {}
 
   ngOnInit() {
     if (this.defaultValue) {
@@ -182,7 +186,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   ngAfterViewInit() {
-    this.scrollEventListener = this.unOrderedList.nativeElement.addEventListener('scroll', (event: any) => {
+    this.scrollEventListener = this.renderer.listen(this.unOrderedList.nativeElement, 'scroll', (event: any) => {
       if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
         if ((typeof this.totalRecords !== 'undefined' && this.scrollDownIndex >= this.totalRecords)) {
           this.displayViewMoreButton = false;
@@ -195,14 +199,19 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     });
   }
 
-  handleOnFocusEvent(event: any) {
-    if (this.isAutoCompleteDisabled) { return; }
-    this.isAutoCompleteDivClicked = true;
+  setAutoCompleteWidth() {
     const getListId = this.listContainer.nativeElement.style;
     const getInputId = document.getElementById('searchInput')?.clientWidth;
     if (getListId && getInputId) {
       getListId.width = getInputId + 'px';
     }
+  }
+
+  handleOnFocusEvent(event: any) {
+    if (this.isAutoCompleteDisabled) { return; }
+    this.isAutoCompleteDivClicked = true;
+    this.setAutoCompleteWidth();
+    this.autocompleteWidthListener = this.renderer.listen(window, 'resize', () => this.setAutoCompleteWidth());
     if (this.emitAutoCompleteOpenEvent) {
       this.emitAutoCompleteOpenEvent.emit(event)
     }
@@ -462,6 +471,10 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.emitBlurEvent.emit(true);
     }
     this.displayViewMoreButton = false;
+    if (this.autocompleteWidthListener !== undefined) {
+      // In dev mode listener may still get executed. In prod mode, it should be fine.
+      this.autocompleteWidthListener();
+    }
   }
 
   setDefaults() {
@@ -543,5 +556,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   ngOnDestroy() {
     this.setDefaults();
+     // In dev mode listener may still get executed. In prod mode, it should be fine.
+    this.scrollEventListener();
   }
 }

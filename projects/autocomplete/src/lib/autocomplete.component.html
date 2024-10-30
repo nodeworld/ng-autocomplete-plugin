@@ -21,6 +21,7 @@ class="auto-complete-textfield-container">
   [ngStyle]="customStyle && customStyle.inputFieldContainerStyle ? customStyle.inputFieldContainerStyle : null"
   #fieldContainer>
   <input
+    #searchInput
     id="searchInput"
     [attr.role]="ariaRole"
     [(ngModel)]="searchValue"
