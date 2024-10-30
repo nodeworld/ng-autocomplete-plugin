@@ -28,7 +28,7 @@ Angular 14+
 - Added `View More` to List dropdown at the end of the list as an alternative to call API when reaching the end of scroll.
 - Now the developers who consume this package can decide how they should trigger an API Call. Using `View More`, or triggering API Call when reaching end of scroll. Both can be configured as well. Refer below for more information.
 - Renamed the internal class `loader`  to `autocomplete-plugin-loader` as `loader` class is too common name and may collide with other libraries.
-- Updated scroll event and resize event by using `Rerender2` to efficiently manage the event listeners.
+- Updated scroll event and resize event by using `Renderer2` to efficiently manage the event listeners.
 
 ## How to make best use of this package ?
 

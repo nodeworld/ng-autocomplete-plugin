@@ -9,7 +9,7 @@
 - Now the developers who consume this package can decide how they should trigger an API Call. Using `View More`, or triggering API Call when reaching end of scroll. Both can be configured as well. Refer below for more information.
 - Added the input properties - inspectAutoCompleteList, viewMoreText and optViewMoreOnlyForApiCall.
 - Renamed the internal class `loader`  to `autocomplete-plugin-loader` as `loader` class is too common name and may collide with other libraries.
-- Updated scroll event and resize event by using `Rerender2` to efficiently manage the event listeners.
+- Updated scroll event and resize event by using `Renderer2` to efficiently manage the event listeners.
 - Updated Readme file and stackblitz examples.
 - Upgrade to this package is recommended.
 
