@@ -103,7 +103,7 @@
  }
 
 .disable-list-element {
-    pointer-events:none;
+    cursor: context-menu !important;
     opacity:0.5;
     background-color: #E5E5E5;
  }

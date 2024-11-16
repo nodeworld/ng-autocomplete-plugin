@@ -67,7 +67,7 @@ class="auto-complete-textfield-container">
                 (customClass && customClass.disableListClass && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]) )) ? customClass.disableListClass : '']"
               [ngStyle]="customStyle && customStyle.dropdownListStyle ? customStyle.dropdownListStyle : null"
               class="autocomplete-data-list"
-              (click)="selectedItem(data)">
+              (click)="selectedItem(i, data)">
               {{!objectProperty ? data : data[objectProperty]}}
             </li>
         </ng-container>
