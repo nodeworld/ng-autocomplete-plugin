@@ -225,7 +225,6 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
           return;
         }
         const getData = this.filteredData[this.listFocusIndex];
-        console.log(getData);
         if (getData) {
           this.selectedItem(getData);
           this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.remove('autocomplete-keydown-background');
@@ -267,7 +266,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         } else {
           this.listFocusIndex = this.listFocusIndex - 1;
         }
-        id = this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.id; console.log(id);
+        id = this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.id;
         if (id === undefined || id === null) { return; }
         if (!id.includes('autocomplete-li-element-')) { return; }
         getIndex = Number(id.substring(id.lastIndexOf('-') + 1));
