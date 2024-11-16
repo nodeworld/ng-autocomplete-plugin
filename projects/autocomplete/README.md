@@ -22,12 +22,14 @@ Angular 14+
 - 22+ solid test cases to validate the module
 - Eventful module.
 
-## What's new in 2.0.0 ?
+## What's new in ^2.0.0?
 
 - Search algorithm has been redefined without impacting prior versions.
 - Added `View More` to List dropdown at the end of the list as an alternative to call API when reaching the end of scroll.
 - Now the developers who consume this package can decide how they should trigger an API Call. Using `View More`, or triggering API Call when reaching end of scroll. Both can be configured as well. Refer below for more information.
-
+- Renamed the internal class `loader`  to `autocomplete-plugin-loader` as `loader` class is too common name and may collide with other libraries.
+- Updated scroll event and resize event by using `Renderer2` to efficiently manage the event listeners.
+- Added ARIA label by introducing an input property `ariaViewMore`.
 
 ## How to make best use of this package ?
 
@@ -66,6 +68,7 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
+| `2.0.1`  | Recommended. No code changes were done. Only README file updated. |
 | `2.0.0`  | Recommended. Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |
 | 1.0.3    | Updated readme file with few changes. |
 | 1.0.2    | Only Read me file updated. |
@@ -81,6 +84,7 @@ To run tests, run the following command
 | Autocomplete With Tailwind    | [Autocomplete with tailwind](https://stackblitz.com/edit/starters-tailwind-by-ven-vcksuf)|
 | Turn off performance calculation during scroll  | [Turn off performance calculation during scroll](https://stackblitz.com/edit/angular-ivy-mqghge)|
 | Disabling a list in dropdown| [Disabling a list in dropdown](https://stackblitz.com/edit/angular-ivy-cnzhan)|
+| View More button for API lazy load| [View More button for API lazy load](https://stackblitz.com/edit/ng-autocomplete-view-more)|
 
 ## API Usage
 
@@ -117,6 +121,7 @@ To run tests, run the following command
 |`inspectAutoCompleteList`|`boolean`|`No` | Default is `false`. When set to `true`, autocomplete dropdown will not be closed or hidden during onBlur or onFocusOut events. This is intended only for debugging and development purposes. For production it should be always `false` to avoid interruption. |
 |`showViewMore`|`boolean`|`No` | Default is `true`. `View More` List will be shown at the end of dropdown if user has enabled lazy loading (`triggerApiLoadEvent`). `View More` will appear only when API call is to be executed. |
 |`optViewMoreOnlyForApiCall`|`boolean`|`No` | Default is `false`. When set to `true`, API Call will not be executed on reaching the end of the scroll, instead `View More` button has to be clicked to call the API or any custom function. |
+|`viewMoreText`|`string`|`No` | Default text is `View More`. It can be customized with this input property.|
 
 #### Output decorators
 | Output    | Required  | Description |
@@ -231,7 +236,9 @@ When `scrollThreshold` is set to 1, the virtual dropdown list will hold the reco
 | `disableListClass`            | `No` | Adds class to each `li` items. Depends on `disableListFn` function or `disableProperty`  |
 | `inputLabelClass`             | `No` | Adds class to `<label>` field |
 | `inputLabelContainerClass`    | `No` | Adds class to parent div of `<label>` field |
-| `viewMoreClass`               | `No` | Adds class to View More `li` item 
+| `viewMoreClass`               | `No` | Adds class to View More `li` item |
+
+
 import `CustomClassType` Type into your app, to see the custom class types available. Its optional, but would be good to use. Write your custom class in global css file or use ::ng-deep from specific components.
 
 ```ts
@@ -355,6 +362,7 @@ A flexible option is provided to add custom functionality in the input text fiel
 | `ariaULList`          | @Input    | `No` | Adds ARIA label to `ul` list item |
 | `ariaListContainer`   | @Input    | `No` | Adds ARIA label to list container `div`. |
 | `ariaInputLabel`      | @Input    | `No` | Adds ARIA label to `label field`. |
+| `ariaViewMore`        | @Input    | `No` | Adds ARIA label to View More `li` item |
 
 ## Change Logs and version history
 

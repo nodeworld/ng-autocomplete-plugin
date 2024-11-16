@@ -1,5 +1,11 @@
 # Module version changes and fixes.
 
+## 2.0.1
+
+`Users are safe to upgrade to 2.0.0 from any lower version without any module level changes.`
+- Added information on input property `viewMoreText` in README file.
+- Added information on input property `ariaViewMore`.
+
 ## 2.0.0
 
 `Users are safe to upgrade to 2.0.0 from any lower version without any module level changes.`
