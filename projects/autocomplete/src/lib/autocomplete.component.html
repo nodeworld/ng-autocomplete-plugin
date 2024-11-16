@@ -89,6 +89,7 @@ class="auto-complete-textfield-container">
             triggerApiLoadEvent &&
             displayViewMoreButton"
             tabindex="0"
+            [attr.aria-label]="ariaViewMore"
             (click)="onViewMore($event); $event.stopPropagation()"
             [ngClass]="customClass && customClass.viewMoreClass ? customClass.viewMoreClass : ''"
             [ngStyle]="customStyle && customStyle.viewMoreStyle ? customStyle.viewMoreStyle : null"

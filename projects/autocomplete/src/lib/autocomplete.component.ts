@@ -90,6 +90,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() ariaInputLabel = "Automcomplete search";
 
+  @Input() ariaViewMore = "View more list";
+
   @Input() showInputlabel = false;
 
   @Input() inputLabel = "Enter or Search value";
