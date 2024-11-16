@@ -19,6 +19,7 @@ Angular 14+
 - Supports custom events
 - Easy virtual scrolling for large data set without 3rd party
 - Custom classes and ng-styles are allowed
+- Keyboard navigation events to scroll through dropdown list
 - 22+ solid test cases to validate the module
 - Eventful module.
 
@@ -30,6 +31,7 @@ Angular 14+
 - Renamed the internal class `loader`  to `autocomplete-plugin-loader` as `loader` class is too common name and may collide with other libraries.
 - Updated scroll event and resize event by using `Renderer2` to efficiently manage the event listeners.
 - Added ARIA label by introducing an input property `ariaViewMore`.
+- Added keyboard navigation events to scroll through dropdown list and select the list when pressing Enter Key
 
 ## How to make best use of this package ?
 
@@ -68,8 +70,9 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `2.0.1`  | Recommended. No code changes were done. Only README file updated. |
-| `2.0.0`  | Recommended. Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |
+| `2.1.0`  | Recommended. Added keyboard navigation events to scroll through dropdown list. Refer changelog for more information. |
+| 2.0.1    | No code changes were done. Only README file updated. |
+| 2.0.0    | Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |
 | 1.0.3    | Updated readme file with few changes. |
 | 1.0.2    | Only Read me file updated. |
 | 1.0.1    | First major version |

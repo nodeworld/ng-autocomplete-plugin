@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, TrackByFunction, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, QueryList, Renderer2, SimpleChanges, TrackByFunction, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { CustomClassType, CustomNgStyleType } from '../types/autocomplete-type';
 
@@ -66,11 +66,15 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @ViewChild('autoCompleteContainer') autoCompleteContainer!: ElementRef<HTMLElement>;
 
+  @ViewChildren('autocompleteListElement') autocompleteListElement!: QueryList<ElementRef<HTMLLIElement>>;
+
   @ViewChild('listContainer') listContainer!: ElementRef<HTMLElement>;
   
   @ViewChild('fieldContainer') fieldContainer!: ElementRef<HTMLElement>;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
+
+  @ViewChild('viewMoreElement') viewMoreElement!: ElementRef;
 
   @Input() searchFn: any;
 
@@ -108,6 +112,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   scrollEventListener: any;
 
+  keyboardEventListner: any;
+
   autocompleteWidthListener: any;
 
   isScrolling: any;
@@ -124,6 +130,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   isViewMoreApiBeingExecuted = false;
 
+  isViewMoreFocused = false;
+
   theTimeOut: any;
 
   displayViewMoreButton = false;
@@ -132,6 +140,8 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   scrollTimer: Subscription | undefined ;
 
   numberRegex = /^\-?\d+\.?\d*$/;
+
+  listFocusIndex = -1;
 
   constructor(private renderer: Renderer2) {}
 
@@ -199,7 +209,80 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.initData();
       }
     });
+    if (this.searchInput?.nativeElement) {
+      this.keyboardEventListner = this.renderer.listen(this.searchInput.nativeElement, 'keydown', (event: any) => this.keyboardEvent(event));
+    }
   }
+
+  keyboardEvent(event: any) {
+    if (this.filteredData.length <= 0) { return; }
+    let id; let getIndex;
+    switch (event?.keyCode) {
+      case 13:
+        if (this.isViewMoreFocused) {
+          this.onViewMore(null);
+          this.isViewMoreFocused = false;
+          return;
+        }
+        const getData = this.filteredData[this.listFocusIndex];
+        if (getData) {
+          this.selectedItem(getData);
+          this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.remove('autocomplete-keydown-background');
+        }       
+        return;
+      case 40:
+        if (this.listFocusIndex + 1 === this.filteredData.length) {
+          if (this.displayViewMoreButton) {
+            this.viewMoreElement?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            this.viewMoreElement?.nativeElement.classList.add('autocomplete-keydown-viewmore');
+            this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.remove('autocomplete-keydown-background');
+            this.isViewMoreFocused = true;
+          }
+          return;
+        }
+        this.listFocusIndex = this.listFocusIndex + 1;
+        id = this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.id;
+        if (id === undefined || id === null) { return; }
+        if (!id.includes('autocomplete-li-element-')) { return; }
+        getIndex = Number(id.substring(id.lastIndexOf('-') + 1));
+        if (typeof getIndex !== 'number') { return; }
+        if (this.scrollTimer) { this.scrollTimer.unsubscribe(); }
+        this.scrollTimer = timer(20).subscribe(() => {
+          this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.add('autocomplete-keydown-background');
+          if (this.listFocusIndex > 0) {
+            this.autocompleteListElement.get(this.listFocusIndex - 1)?.nativeElement.classList.remove('autocomplete-keydown-background');
+            if (this.listFocusIndex + 1 === this.filteredData.length && this.displayViewMoreButton) {
+              this.unOrderedList.nativeElement?.scrollTo(0, this.unOrderedList.nativeElement.scrollHeight + 10);
+            }
+          }
+        });
+        return;
+      case 38:
+        if (this.listFocusIndex <= 0) { return; }
+        if (this.isViewMoreFocused) {
+          this.isViewMoreFocused = false;
+          this.viewMoreElement?.nativeElement.classList.remove('autocomplete-keydown-viewmore');
+        } else {
+          this.listFocusIndex = this.listFocusIndex - 1;
+        }
+        id = this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.id;
+        if (id === undefined || id === null) { return; }
+        if (!id.includes('autocomplete-li-element-')) { return; }
+        getIndex = Number(id.substring(id.lastIndexOf('-') + 1));
+        if (typeof getIndex !== 'number') { return; }
+        if (this.scrollTimer) { this.scrollTimer.unsubscribe(); }
+        this.scrollTimer = timer(20).subscribe(() => {
+          this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.add('autocomplete-keydown-background');
+          this.autocompleteListElement.get(this.listFocusIndex + 1)?.nativeElement.classList.remove('autocomplete-keydown-background');
+        });
+        return;
+      default:
+        return;
+    }
+  }
+
 
   setAutoCompleteWidth() {
     const getListId = this.listContainer.nativeElement.style;
@@ -393,6 +476,9 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   async onSearch(_event: any) {
     let searchedValue: any;
+    if (!this.isAutoCompleteDivClicked) {
+      this.isAutoCompleteDivClicked = true;
+    }
     if (this.isTypeNumber() && this.isSearchValueANumber(this.searchValue)) {
       searchedValue = Number(this.searchValue);
     } else {
@@ -473,6 +559,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.emitBlurEvent.emit(true);
     }
     this.displayViewMoreButton = false;
+    this.listFocusIndex = -1;
     if (this.autocompleteWidthListener !== undefined) {
       // In dev mode listener may still get executed. In prod mode, it should be fine.
       this.autocompleteWidthListener();
@@ -492,7 +579,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.loaderTimer) { this.loaderTimer.unsubscribe(); }
     if(this.scrollTimer) { this.scrollTimer.unsubscribe(); }
     if (this.theTimeOut) { this.theTimeOut = null; }
-    if (this.scrollEventListener) { document.removeEventListener('scroll', this.scrollEventListener, false); }
+    // if (this.scrollEventListener) { document.removeEventListener('scroll', this.scrollEventListener, false); }
     if (this.searchFn) { this.searchFn = undefined; }
   }
 
@@ -560,5 +647,6 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.setDefaults();
      // In dev mode listener may still get executed. In prod mode, it should be fine.
     this.scrollEventListener();
+    this.keyboardEventListner();
   }
 }
