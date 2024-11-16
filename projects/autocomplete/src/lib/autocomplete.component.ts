@@ -224,9 +224,12 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.isViewMoreFocused = false;
           return;
         }
+        if(this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.contains('disable-list-element')) {
+          return;
+        }
         const getData = this.filteredData[this.listFocusIndex];
-        if (getData) {
-          this.selectedItem(getData);
+        if (getData !== undefined && getData !== null) {
+          this.selectedItem(this.listFocusIndex, getData);
           this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.remove('autocomplete-keydown-background');
         }       
         return;
@@ -316,6 +319,12 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       return;
     }
     if ((event?.relatedTarget as HTMLElement)?.classList?.contains('unorder-list')) {
+      if (!this.searchValue) {
+        document.getElementById('searchInput')?.focus();
+      }
+      return;
+    }
+    if ((event?.relatedTarget as HTMLElement)?.classList?.contains('disable-list-element')) {
       if (!this.searchValue) {
         document.getElementById('searchInput')?.focus();
       }
@@ -528,8 +537,14 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  selectedItem(data: any) {
+  selectedItem(index: number, data: any) {
     try {
+      if (this.disableProperty && data[this.disableProperty]) {
+        return;
+      }
+      if (this.disableListFn !== undefined && this.disableListFn !== null && this.disableListFn(index, data)) {
+        return;
+      }
       if (this.objectProperty && data[this.objectProperty]) {
         this.searchValue = data[this.objectProperty] + '';
       } else {
