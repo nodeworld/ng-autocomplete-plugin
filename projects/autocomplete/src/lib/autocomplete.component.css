@@ -125,3 +125,11 @@
     background-color: #f6f5f5;
     letter-spacing: 0.5px;
 }
+
+.autocomplete-keydown-background {
+    background-color: #F4F4F4;
+}
+
+.autocomplete-keydown-viewmore {
+    background-color: #c8c8c8;
+}

@@ -57,7 +57,10 @@ class="auto-complete-textfield-container">
           <ng-container
           *ngFor="let data of filteredData; let i = index; trackBy: customTrackBy ? customTrackBy: identify">
             <li
+              #autocompleteListElement
+              id="autocomplete-li-element-{{i}}"
               tabindex="0"
+              attr.aria-label="{{i}}"
               [attr.aria-disabled]="disableListFn ? disableListFn(i, data) : (disableProperty) ? data[disableProperty] : false"
               [ngClass]="[customClass && customClass.dropdownListClass ? customClass.dropdownListClass : '',
                 ((!customClass || !customClass.disableListClass) && ((disableListFn && disableListFn(i, data)) || (disableProperty && data[disableProperty]))) ? 'disable-list-element' : '',
@@ -82,6 +85,7 @@ class="auto-complete-textfield-container">
             {{noSearchResultMessage}}
           </li>
             <li
+            #viewMoreElement
             *ngIf="
             showViewMore &&
             !isEventEmitted &&
