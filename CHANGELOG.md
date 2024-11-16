@@ -1,10 +1,11 @@
 # Module version changes and fixes.
 
-## 2.1.0
+## 2.1.1
 
-`Users are safe to upgrade to 2.1.0 from any lower version without any module level changes.`
+`Users are safe to upgrade to 2.1.1 from any lower version without any module level changes.`
 - Added keyboard navigation events to scroll through dropdown list and select when pressing Enter Key.
 - Added Aria label to the dropdown list to help the screen readers.
+- Fixed a bug to not select dropdown when list is disabled
 
 ## 2.0.1
 
