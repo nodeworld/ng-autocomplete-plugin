@@ -1,5 +1,10 @@
 # Module version changes and fixes.
 
+## 2.1.2
+
+`Users are safe to upgrade to 2.1.2 from any lower version without any module level changes.`
+- Added ESC keyboard event to close autocomplete on pressing ESC.
+
 ## 2.1.1
 
 `Users are safe to upgrade to 2.1.1 from any lower version without any module level changes.`

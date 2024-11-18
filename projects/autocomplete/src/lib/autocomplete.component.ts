@@ -187,7 +187,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.isViewMoreApiBeingExecuted) {
         this.isViewMoreApiBeingExecuted = false;
       }
-      if (this.searchValue) {
+      if (this.searchValue && this.isInputFieldDirty) {
         const dropdownData = this.updateDropdownDataOnSearch(this.searchValue);
         this.searchedData = dropdownData;
         this.findThresholdAndSetFilteredData(dropdownData);
@@ -215,9 +215,23 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   keyboardEvent(event: any) {
-    if (this.filteredData.length <= 0) { return; }
+    if (this.filteredData.length <= 0 && event?.keyCode !== 27) { return; }
     let id; let getIndex;
     switch (event?.keyCode) {
+      case 27:
+        if (this.isAutoCompleteDivClicked) {
+          this.isAutoCompleteDivClicked = false;
+          this.searchInput?.nativeElement?.blur();
+          if (this.listFocusIndex !== -1) {
+            this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement?.classList.remove('autocomplete-keydown-background');
+          }
+          if (this.isViewMoreFocused) {
+            this.viewMoreElement.nativeElement?.classList.remove('autocomplete-keydown-viewmore');
+          }
+          this.listFocusIndex = -1;
+          this.isViewMoreFocused = false;
+        }
+        return;
       case 13:
         if (this.isViewMoreFocused) {
           this.onViewMore(null);
@@ -231,6 +245,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (getData !== undefined && getData !== null) {
           this.selectedItem(this.listFocusIndex, getData);
           this.autocompleteListElement.get(this.listFocusIndex)?.nativeElement.classList.remove('autocomplete-keydown-background');
+          this.searchInput?.nativeElement?.blur();
         }       
         return;
       case 40:
