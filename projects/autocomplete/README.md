@@ -1,3 +1,4 @@
+![Module JS](https://modulejs.org/img/banner.png?raw=true)
 
 # Angular Autocomplete 
 
@@ -22,6 +23,10 @@ Angular 14+
 - Keyboard navigation events to scroll through dropdown list
 - 22+ solid test cases to validate the module
 - Eventful module.
+
+## Web documentation
+
+Documentation is now available on [modulejs.org](https://modulejs.org)
 
 ## What's new in ^2.0.0?
 
@@ -70,7 +75,8 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `2.1.2`  | Recommended and stable version. Added ESC keyboard event to close autocomplete on pressing ESC button. |
+| `2.1.3`  | Recommended. Added Banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation. |
+| `2.1.2`  | Stable version. Added ESC keyboard event to close autocomplete on pressing ESC button. |
 | 2.1.1    | Added keyboard navigation events to scroll through dropdown list. Refer changelog for more information. |
 | 2.0.1    | No code changes were done. Only README file updated. |
 | 2.0.0    | Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |

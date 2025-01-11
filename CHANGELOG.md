@@ -1,5 +1,10 @@
 # Module version changes and fixes.
 
+## 2.1.3
+
+`Users are safe to upgrade to 2.1.3 from any lower version without any module level changes.`
+- Added banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation.
+
 ## 2.1.2
 
 `Users are safe to upgrade to 2.1.2 from any lower version without any module level changes.`
