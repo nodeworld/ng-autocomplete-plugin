@@ -14,6 +14,7 @@ Angular 14+
 - Lightweight module
 - No 3rd party packages installed
 - Ability to use 3rd party style packages like bootstrap, tailwind or any css libraries. (You can update the classes from your component)
+- Relative Search (Searching through the objects in the dropdown array)
 - No angular material or cdk library
 - Supports large data set
 - Customizable scroll functionality
@@ -75,8 +76,9 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `2.1.4`  | Recommended. Added Banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation. |
-| `2.1.2`  | Stable version. Added ESC keyboard event to close autocomplete on pressing ESC button. |
+| `2.1.5`   | Recommended. Relative Search feature has been introduced to search the entire object. Refer API usage for details. Other small feature - Ability to load all data at once without lazy load scrolling feature, refer loadAllDataAtOnce API props for this.Upgrading from lower version to 2.1.4 is safe without any configuration change.|
+| `2.1.4`  | Added Banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation. |
+| 2.1.2  | Stable version. Added ESC keyboard event to close autocomplete on pressing ESC button. |
 | 2.1.1    | Added keyboard navigation events to scroll through dropdown list. Refer changelog for more information. |
 | 2.0.1    | No code changes were done. Only README file updated. |
 | 2.0.0    | Major Upgrade in search algorithm with certain bugs fixed. Added View More Button as a new feature. |
@@ -95,7 +97,8 @@ To run tests, run the following command
 | Turn off performance calculation during scroll  | [Turn off performance calculation during scroll](https://stackblitz.com/edit/angular-ivy-mqghge)|
 | Disabling a list in dropdown| [Disabling a list in dropdown](https://stackblitz.com/edit/angular-ivy-cnzhan)|
 | View More button for API lazy load| [View More button for API lazy load](https://stackblitz.com/edit/ng-autocomplete-view-more)|
-
+| Autocomplete Relative Search | [Autocomplete Relative Search](https://stackblitz.com/edit/ng-autocomplete-plugin-relative-search) |
+| Autocomplete Relative Search with conditions | [Autocomplete Relative Search with conditions](https://stackblitz.com/edit/ng-autocomplete-plugin-relative-search-with-conditions) |
 ## API Usage
 
 #### Input decorators
@@ -132,6 +135,9 @@ To run tests, run the following command
 |`showViewMore`|`boolean`|`No` | Default is `true`. `View More` List will be shown at the end of dropdown if user has enabled lazy loading (`triggerApiLoadEvent`). `View More` will appear only when API call is to be executed. |
 |`optViewMoreOnlyForApiCall`|`boolean`|`No` | Default is `false`. When set to `true`, API Call will not be executed on reaching the end of the scroll, instead `View More` button has to be clicked to call the API or any custom function. |
 |`viewMoreText`|`string`|`No` | Default text is `View More`. It can be customized with this input property.|
+|`loadAllDataAtOnce`|`boolean`|`No`|Default value is `false`. If set to true, all the dropdown list will be loaded at once without lazy loading. May not be recommended for large data set to avoid performance issues.|
+| `additionalData` | `object` | `No` | `Undefined` by default. Has `relativeSearch` as one of the property.|
+| `relativeSearch` | `boolean` or `object` | `No` | Not enabled by default. `relativeSearch` is available under `additionalData` props. If `relativeSearch` is set as `true`, entire object will be searched during input search. `relativeSearch` can also be set as an object to set more custom options during search. More details found in below sections. |
 
 #### Output decorators
 | Output    | Required  | Description |
@@ -141,6 +147,58 @@ To run tests, run the following command
 |`emitAutoCompleteOpenEvent` |`No` | Emits event when dropdown is opened or displayed. `triggerAutoCompleteOpenEvent` needs to be set to true to emit this event.|
 |`emitClearSelectedEvent` |`No` | Emits event when selected value is cleared. `triggerClearSelectionEvent` needs to be set to true to emit this event.|
 |`emitBlurEvent` |`No` | Emits event during focus out. `triggerBlurEvent` needs to be set to true to emit this event.|
+
+# Relative Search
+
+Relative search is breaking feature introduced in `2.1.5` version which allows to search the whole object. `relativeSearch` is available under `additionalData` props. 
+
+`dropdownData` should be an object and `objectProperty` should be available to make `relativeSearch` feature work.
+
+If `relativeSearch` is set to `true`, entire object will be searched during the input search.
+
+```js
+const dropdownData = `[{ sku: 12345, name: 'Apple'}, { sku: 67890, name: 'Samsung'}]`
+```
+
+```html
+<ng-autocomplete
+    [dropdownData]="dropdownData"
+    (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
+    [objectProperty]="'name'"
+    :additionalData="{ relativeSearch: true }">
+</ng-autocomplete>
+```
+
+In the above example, when searched with the inputs 12345 or Apple, first object will be filtered and produced as result.
+
+`relativeSearch` also supports custom settings apart from boolean. Below attributes are supported in `relativeSearch` object.
+
+| Property | Type  | Required | Description |
+| -------- | ------- | ------- | ------- |
+| `includeOnly` | `string[]` | `optional` | Searches only the value of mentioned keys or attributes available in the object.|
+| `customRelativeSearchFunction` | `Function` | `optional` | Implementing your own custom function for relative search. This is helpful when the object has nested objects. Custom function will accept one parameter 'searchValue' in which typed input value will be passed. Use the dropdown data available in yoor component for custom filtering. Example: `[{ sku: 12345, name: 'Apple', country: [{ name: 'USA'}, { name: 'China'}]}, { sku: 67890, name: 'Samsung', country: [{ name: 'USA'}, { name: 'China'}] }]`. The module will not search the country array as they are nested and the module would not predict the nested objects or arrays as they are based on project requirements. In this case you can write your own `customRelativeSearchFunction`.|
+| `setDefaultValueWithACustomFunction`| `Function` | `optional` | If `relativeSearch` is enabled, the setting up default value using `defaultValue` props will not work. Implement your own  `setDefaultValueWithACustomFunction` and return the object (not array of objects). The returned object should be available in `dropdownData` and should contain the `objectProperty` to allow the module to set default value.|
+
+Please note that `searchFn` in the props and `additionalData`.`relativeSearch`.`customRelativeSearchFunction` has minor difference. While you can use `searchFn` to completely customize the onSearch function, `customRelativeSearchFunction` can be used to search nested objects with a custom function. Based on the requirements, any of the both custom functions can be used based on how it suits the application.
+
+```js
+const dropdownData = `[{ sku: 12345, name: 'Apple'}, { sku: 67890, name: 'Samsung'}]`
+```
+
+```html
+<ng-autocomplete
+    [dropdownData]="dropdownData"
+    (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
+    [objectProperty]="'name'"
+    [additionalData]="{ relativeSearch: { includeOnly: ['sku'] } }">
+</ng-autocomplete>
+```
+
+In the above example, only the sku attribute in the object will be searched.
+
+Checkout the stackblitz example to know how it works.
+
+It's your responsibility to check the performance impact when using the relative search for large data.
 
 # Using the module
 
@@ -382,6 +440,12 @@ Refer the change history by viewing this link - [CHANGELOG](https://github.com/n
 
 Github Link - [ng-autocomplete-plugin](https://github.com/nodeworld/ng-autocomplete-plugin)
 
+## Other plugins
+
+Checkout similar Autocomplete plugin in Vue Framework [vue-autocomplete-plugin](https://www.npmjs.com/package/vue-autocomplete-plugin) with same features
+
+Checkout similar Autocomplete plugin in React Framework [react-autocomplete-plugin](https://www.npmjs.com/package/react-autocomplete-plugin) with same features
+
 ## Support
 
 Please raise an issue in github repository
@@ -390,5 +454,5 @@ Github Link - [Raise an issue](https://github.com/nodeworld/ng-autocomplete-plug
 
 ## Roadmap
 
-- Multiselect dropdown before Q1 2025
-- Extensive search - Ability to search entire object in the list
+- Multiselect dropdown feature
+

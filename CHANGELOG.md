@@ -1,5 +1,13 @@
 # Module version changes and fixes.
 
+## 2.1.5
+
+`Users are safe to upgrade to 2.1.5 from any lower version without any module level changes.`
+
+- Relative Search feature has been introduced to search the entire object. Refer API usage for details. Upgrading from lower version to 2.1.4 is safe without any configuration change.
+
+- Ability to load all data at once without lazy load scrolling feature.
+
 ## 2.1.4
 
 `Users are safe to upgrade to 2.1.4 from any lower version without any module level changes.`
