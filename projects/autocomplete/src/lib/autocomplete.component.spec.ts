@@ -136,7 +136,7 @@ describe('AutocompleteComponent', () => {
   /* Testcase to check if ngModel is updated after dropdown is selected. */
   it("Expect selected dropdown value is assigned to ngModel variable.", () => {
     const fruit = "Apple";
-    component.selectedItem(fruit);
+    component.selectedItem(0, fruit);
     spyOn(component, 'closeAutoComplete').and.stub();
     expect(component.searchValue).toEqual(fruit);
   });
@@ -161,8 +161,8 @@ describe('AutocompleteComponent', () => {
     component.noSearchResultMessage = message;
     component.ngOnInit();
     component.handleOnFocusEvent(null);
-    const text = debugElement.query(By.css(".noSearchResult")).nativeElement;
     fixture.detectChanges();
+    const text = debugElement.query(By.css(".noSearchResult")).nativeElement;
     expect(text.textContent).toContain(message);
   });
 
@@ -173,7 +173,7 @@ describe('AutocompleteComponent', () => {
     component.handleOnFocusEvent(null);
     spyOn(component, "closeAutoComplete").and.stub();
     spyOn(component.emitSelectedValue, 'emit').and.stub();
-    component.selectedItem("Apple");
+    component.selectedItem(0, "Apple");
     expect(component.emitSelectedValue.emit).toHaveBeenCalled();
   });
 
@@ -183,7 +183,7 @@ describe('AutocompleteComponent', () => {
     component.ngOnInit();
     component.handleOnFocusEvent(null);
     spyOn(component.emitSelectedValue, 'emit').and.stub();
-    component.selectedItem("Apple");
+    component.selectedItem(0, "Apple");
     expect(component.isAutoCompleteDivClicked).toBeFalse();
   });
 

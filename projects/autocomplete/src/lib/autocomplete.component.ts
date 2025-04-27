@@ -2,6 +2,16 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, O
 import { Subscription, timer } from 'rxjs';
 import { CustomClassType, CustomNgStyleType } from '../types/autocomplete-type';
 
+type RelativeSearchType = {
+  includeOnly?: string[];
+  customRelativeSearchFunction?: Function;
+  setDefaultValueWithACustomFunction?: Function;
+}
+
+type AdditionalDataType = {
+  relativeSearch?: RelativeSearchType | boolean;
+}
+
 @Component({
   selector: 'ng-autocomplete',
   templateUrl: './autocomplete.component.html',
@@ -110,6 +120,10 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @Input() optViewMoreOnlyForApiCall = false;
 
+  @Input() additionalData: AdditionalDataType | undefined;
+
+  @Input() loadAllDataAtOnce = false;
+
   scrollEventListener: any;
 
   keyboardEventListner: any;
@@ -150,13 +164,29 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.objectProperty) {
         let getValue;
         if (typeof this.defaultValue === 'object') {
-          if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue[this.objectProperty!]))) {
+          if (this.isRelativeSearch()) {
+            if (!this.isSetDefaultValueWithACustomFunction()) { return; }
+            this.callSetDefaultValueWithACustomFunction().then((value: any) => {
+              if (value && value?.[this.objectProperty!]) {
+                this.searchValue = value[this.objectProperty!];
+              }
+            }).catch(err => console.log(err));
+            return;
+          } else if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue[this.objectProperty!]))) {
             getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === (this.defaultValue[this.objectProperty!] + '')?.toString().toLowerCase().trim());
           } else {
             getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === this.defaultValue[this.objectProperty!]?.toString().toLowerCase().trim());
           }
         } else {
-          if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue))) {
+          if (this.isRelativeSearch()) {
+            if (!this.isSetDefaultValueWithACustomFunction()) { return; }
+            this.callSetDefaultValueWithACustomFunction().then((value: any) => {
+              if (value && value?.[this.objectProperty!]) {
+                this.searchValue = value[this.objectProperty!];
+              }
+            }).catch(err => console.log(err));
+            return;
+          } else if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue))) {
             getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === (this.defaultValue + '')?.toString().toLowerCase().trim());
           } else {
             getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === this.defaultValue?.toString().toLowerCase().trim());
@@ -192,6 +222,11 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.searchedData = dropdownData;
         this.findThresholdAndSetFilteredData(dropdownData);
       } else {
+        if (this.loadAllDataAtOnce) {
+          this.filteredData = [...this.dropdownData];
+          this.scrollDownIndex = this.dropdownData.length;
+          return;
+        }
         this.findThresholdAndSetFilteredData(this.dropdownData);
       }
     }
@@ -451,12 +486,26 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   updateDropdownDataOnSearch(searchedValue: any) {
-    let dropdownData;
+    let dropdownData = [];
     if (this.objectProperty) {
-      if (this.isTypeNumber()) {
-        dropdownData = this.dropdownData.filter(dt => (dt[this.objectProperty!] + '')?.includes(searchedValue));
+      if (!this.isRelativeSearch()) {
+        if (this.isTypeNumber()) {
+          dropdownData = this.dropdownData.filter(dt => (dt[this.objectProperty!] + '')?.includes(searchedValue));
+        } else {
+          dropdownData = this.dropdownData.filter(dt => dt[this.objectProperty!]?.toString().toLowerCase().includes(searchedValue.toLowerCase().trim()));
+        }
+      } else if (typeof this.additionalData?.relativeSearch === 'object') {
+        const relativeSearch = this.additionalData?.relativeSearch;
+        if (typeof relativeSearch === 'object' && Object.prototype.hasOwnProperty.call(relativeSearch, 'customRelativeSearchFunction') && typeof relativeSearch.customRelativeSearchFunction === 'function') {
+          this.callCustomRelativeSearchFunction()?.then((searchResponse: any) => {
+            this.setSearchedData(searchResponse || [])
+          }).catch(err => {
+            console.log(err);
+            this.filteredData = []
+          });
+        }
       } else {
-        dropdownData = this.dropdownData.filter(dt => dt[this.objectProperty!]?.toString().toLowerCase().includes(searchedValue.toLowerCase().trim()));
+        dropdownData = this.executeRelativeSearch();
       }
     } else {
       if (this.isTypeNumber()) {
@@ -470,6 +519,12 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   setData() {
     const data = [...this.dropdownData];
+    if (this.loadAllDataAtOnce) {
+      this.filteredData = data;
+      this.scrollDownIndex = data.length;
+      this.isDisplayViewButton();
+      return;
+    }
     if (data.length <= this.initialVisibleData) {
         this.filteredData = data;
         this.scrollDownIndex = data.length;
@@ -529,7 +584,16 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
             return;
         }
     }
-    const getSearchData = this.updateDropdownDataOnSearch(searchedValue);
+    const getSearchData: any = this.updateDropdownDataOnSearch(searchedValue);
+    if (getSearchData.length > 0) {
+      this.setSearchedData(getSearchData);
+      return;
+    }
+    this.filteredData = [];
+    return;
+  }
+
+  setSearchedData(getSearchData: any) {
     if (getSearchData.length > 0) {
       const getFirstSetData = getSearchData.slice(0, this.initialVisibleData);
       this.scrollDownIndex = this.scrollDownIndex + getFirstSetData.length;
@@ -538,8 +602,6 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.isDisplayViewButton();
       return;
     }
-    this.filteredData = [];
-    return;
   }
 
   async customSearch(event: any) {
@@ -571,6 +633,73 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     } catch(err) {
       console.log(err);
     }
+  }
+
+  isRelativeSearch(): boolean {
+    return this.additionalData && this.additionalData.relativeSearch ? true : false;
+  }
+
+  isSetDefaultValueWithACustomFunction(): boolean {
+    if (typeof this.additionalData?.relativeSearch === 'object' && typeof this.additionalData.relativeSearch?.setDefaultValueWithACustomFunction === 'function') {
+      return true;
+    }
+    return false;
+  }
+
+  callSetDefaultValueWithACustomFunction() {
+    return new Promise((resolve, reject) => {
+        const result: any[] = (this.additionalData?.relativeSearch as RelativeSearchType)?.setDefaultValueWithACustomFunction!(this.searchValue);
+        if (result) {
+          resolve(result);
+        }
+        reject([]);
+      });
+  }
+
+  callCustomRelativeSearchFunction() {
+    const relativeSearch = this.additionalData?.relativeSearch as RelativeSearchType;
+      return new Promise((resolve, reject) => {
+        const result: any[] = relativeSearch?.customRelativeSearchFunction!(this.searchValue);
+        if (result) {
+          resolve(result);
+        }
+        reject([]);
+      });
+  }
+
+  executeRelativeSearch() {
+    const relativeSearch = this.additionalData?.relativeSearch;
+    if (!relativeSearch) { return [] }
+    let searchAttributes: string[] = [];
+    let isCustomFunction = false;
+    if (typeof relativeSearch === 'boolean' && relativeSearch === true) {
+      for (const dObj in this.dropdownData[0]) {
+        searchAttributes.push(dObj);
+      }
+    } else if (typeof relativeSearch === 'object' && Object.keys(relativeSearch).length > 0) {
+      if (Object.prototype.hasOwnProperty.call(relativeSearch, 'includeOnly') && relativeSearch.includeOnly!.length > 0) {
+        searchAttributes = [...relativeSearch.includeOnly!];
+      } else {
+        for (const dObj in this.dropdownData[0]) {
+          searchAttributes.push(dObj);
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(relativeSearch, 'customRelativeSearchFunction') && typeof relativeSearch.customRelativeSearchFunction === 'function') {
+        isCustomFunction = true;
+      }
+    }
+    if (searchAttributes.length > 0) {
+      return this.runDeepSearch((this.searchValue + '').toLowerCase().trim(), searchAttributes);
+    }
+    return [];
+  }
+
+  runDeepSearch(searchKey: string, attributes: string[]) {
+    if (!searchKey) { return [] };
+    return this.dropdownData.filter((item: any) => attributes.some((key) => {
+      const value = item[key];
+      return value.toString().toLowerCase().includes(searchKey)
+    }));
   }
 
   showSpinner(bool: boolean) {
