@@ -8,6 +8,8 @@
 
 - Ability to load all data at once without lazy load scrolling feature.
 
+- Resolved bug related to setting default value when dropdownData is an array of objects.
+
 - Updated Readme file.
 
 ## 2.1.4

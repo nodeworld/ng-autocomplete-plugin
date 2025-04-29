@@ -187,9 +187,9 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
             }).catch(err => console.log(err));
             return;
           } else if (this.isTypeNumber() || (this.isSearchValueANumber(this.defaultValue))) {
-            getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === (this.defaultValue + '')?.toString().toLowerCase().trim());
+            getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === (this.defaultValue + '')?.toString().toLowerCase().trim());
           } else {
-            getValue = this.dropdownData.find(dt => dt?.toString().toLowerCase().trim() === this.defaultValue?.toString().toLowerCase().trim());
+            getValue = this.dropdownData.find(dt => dt[this.objectProperty!]?.toString().toLowerCase().trim() === this.defaultValue?.toString().toLowerCase().trim());
           }
         }
         if (getValue) {
@@ -206,6 +206,13 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.searchValue = getValue;
         }
       }
+    } else if(this.isRelativeSearch() && this.isSetDefaultValueWithACustomFunction()) {
+      this.callSetDefaultValueWithACustomFunction().then((value: any) => {
+        if (value && value?.[this.objectProperty!]) {
+          this.searchValue = value[this.objectProperty!];
+        }
+      }).catch(err => console.log(err));
+      return;
     }
   }
 
@@ -494,16 +501,13 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
         } else {
           dropdownData = this.dropdownData.filter(dt => dt[this.objectProperty!]?.toString().toLowerCase().includes(searchedValue.toLowerCase().trim()));
         }
-      } else if (typeof this.additionalData?.relativeSearch === 'object') {
-        const relativeSearch = this.additionalData?.relativeSearch;
-        if (typeof relativeSearch === 'object' && Object.prototype.hasOwnProperty.call(relativeSearch, 'customRelativeSearchFunction') && typeof relativeSearch.customRelativeSearchFunction === 'function') {
-          this.callCustomRelativeSearchFunction()?.then((searchResponse: any) => {
-            this.setSearchedData(searchResponse || [])
-          }).catch(err => {
-            console.log(err);
-            this.filteredData = []
-          });
-        }
+      } else if (typeof this.additionalData?.relativeSearch === 'object' && Object.prototype.hasOwnProperty.call(this.additionalData.relativeSearch, 'customRelativeSearchFunction') && typeof this.additionalData.relativeSearch.customRelativeSearchFunction === 'function') {
+        this.callCustomRelativeSearchFunction()?.then((searchResponse: any) => {
+          this.setSearchedData(searchResponse || [])
+        }).catch(err => {
+          console.log(err);
+          this.filteredData = []
+        });
       } else {
         dropdownData = this.executeRelativeSearch();
       }
