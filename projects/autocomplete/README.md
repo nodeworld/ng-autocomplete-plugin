@@ -165,7 +165,7 @@ const dropdownData = `[{ sku: 12345, name: 'Apple'}, { sku: 67890, name: 'Samsun
     [dropdownData]="dropdownData"
     (emitSelectedValue)="YOUR_CUSTOM_FUNTION($event)"
     [objectProperty]="'name'"
-    :additionalData="{ relativeSearch: true }">
+    [additionalData]="{ relativeSearch: true }">
 </ng-autocomplete>
 ```
 
