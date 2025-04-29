@@ -8,6 +8,8 @@
 
 - Ability to load all data at once without lazy load scrolling feature.
 
+- Updated Readme file.
+
 ## 2.1.4
 
 `Users are safe to upgrade to 2.1.4 from any lower version without any module level changes.`
