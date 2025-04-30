@@ -135,7 +135,7 @@ To run tests, run the following command
 |`showViewMore`|`boolean`|`No` | Default is `true`. `View More` List will be shown at the end of dropdown if user has enabled lazy loading (`triggerApiLoadEvent`). `View More` will appear only when API call is to be executed. |
 |`optViewMoreOnlyForApiCall`|`boolean`|`No` | Default is `false`. When set to `true`, API Call will not be executed on reaching the end of the scroll, instead `View More` button has to be clicked to call the API or any custom function. |
 |`viewMoreText`|`string`|`No` | Default text is `View More`. It can be customized with this input property.|
-|`loadAllDataAtOnce`|`boolean`|`No`|Default value is `false`. If set to true, all the dropdown list will be loaded at once without lazy loading. May not be recommended for large data set to avoid performance issues.|
+|`loadAllDataAtOnce`|`boolean`|`No`|Default value is `false`. If set to true, all the dropdown list will be loaded at once without lazy loading. All other lazy loading features will be disabled when this is passed `true`. For very large dataset, validate the performance while implementing it. |
 | `additionalData` | `object` | `No` | `Undefined` by default. Has `relativeSearch` as one of the property.|
 | `relativeSearch` | `boolean` or `object` | `No` | Not enabled by default. `relativeSearch` is available under `additionalData` props. If `relativeSearch` is set as `true`, entire object will be searched during input search. `relativeSearch` can also be set as an object to set more custom options during search. More details found in below sections. |
 
