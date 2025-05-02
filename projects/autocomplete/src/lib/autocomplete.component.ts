@@ -400,7 +400,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
       console.warn(`You have turned off blur event in autocomplete module which will not close autocomplete list. Hope you know what you are doing. Update to false after inspect is complete.`)
       return;
     }
-    this.closeAutoComplete();
+    this.closeAutoComplete(event || null);
     this.isAutoCompleteDivClicked = false;
     this.filteredData = [];
 
@@ -713,13 +713,13 @@ export class AutocompleteComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  closeAutoComplete() {
+  closeAutoComplete(event?: any) {
     this.unOrderedList.nativeElement.scrollTo(0, 0);
     this.filteredData = [];
     this.scrollDownIndex = 0;
     this.isAutoCompleteDivClicked = false;
     if (this.triggerBlurEvent) {
-      this.emitBlurEvent.emit(true);
+      this.emitBlurEvent.emit({ event: event || null, value: this.searchValue, blur: true  });
     }
     this.displayViewMoreButton = false;
     this.listFocusIndex = -1;

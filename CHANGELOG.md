@@ -1,10 +1,17 @@
 # Module version changes and fixes.
 
+## 2.1.6
+
+`Users are safe to upgrade to 2.1.6 from any lower version without any module level changes.`
+
+- The blur event (@output emitBlurEvent) will emit an object `{ event: BlurEvent, value: 'Typed value in search field', blue: true }`. Previously this event was just emitting the boolean value `true`. This change will help developers to handle the blur event and business logic in a better way.
+
+
 ## 2.1.5
 
 `Users are safe to upgrade to 2.1.5 from any lower version without any module level changes.`
 
-- Relative Search feature has been introduced to search the entire object. Refer API usage for details. Upgrading from lower version to 2.1.4 is safe without any configuration change.
+- Relative Search feature has been introduced to search the entire object. Refer API usage for details. Upgrading from lower version to 2.1.5 is safe without any configuration change.
 
 - Ability to load all data at once without lazy load scrolling feature.
 
