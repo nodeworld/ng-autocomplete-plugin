@@ -76,8 +76,9 @@ To run tests, run the following command
 
 | ng-autocomplete-plugin version | Description | 
 | :-------- | :-----------|
-| `2.1.5`   | Recommended. Relative Search feature has been introduced to search the entire object. Refer API usage for details. Other small feature - Ability to load all data at once without lazy load scrolling feature, refer loadAllDataAtOnce API props for this. Resolved bug related to setting default value when dropdownData is an array of objects. Readme file had been updated. Upgrading from lower version to 2.1.5 is safe without any configuration change.|
-| `2.1.4`  | Added Banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation. |
+| `2.1.6`   | Recommended. The blur event (@output emitBlurEvent) will emit an object `{ event: BlurEvent, value: 'Typed value in search field', blue: true }`. Previously this event was just emitting the boolean value `true`. This change will help developers to handle the blur event and business logic in a better way. Users are safe to upgrade to `2.1.6` from any lower version without any module level changes.|
+| `2.1.5`   | Relative Search feature has been introduced to search the entire object. Refer API usage for details. Other small feature - Ability to load all data at once without lazy load scrolling feature, refer loadAllDataAtOnce API props for this. Resolved bug related to setting default value when dropdownData is an array of objects. Readme file had been updated. Upgrading from lower version to 2.1.5 is safe without any configuration change.|
+| 2.1.4  | Added Banner for readme file. Refer [modulejs.org](https://modulejs.org) for clean documentation. |
 | 2.1.2  | Stable version. Added ESC keyboard event to close autocomplete on pressing ESC button. |
 | 2.1.1    | Added keyboard navigation events to scroll through dropdown list. Refer changelog for more information. |
 | 2.0.1    | No code changes were done. Only README file updated. |

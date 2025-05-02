@@ -1,6 +1,6 @@
 {
   "name": "ng-autocomplete-plugin",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "peerDependencies": {
     "@angular/common": "*",
     "@angular/core": "*"
